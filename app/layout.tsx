@@ -16,7 +16,6 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Drive Boundless Auto Solutions | Premium Car Rental',
   description: 'Drive Boundless Auto Solutions - Your trusted partner for premium vehicle rentals. Simple booking, exceptional service, boundless possibilities.',
-  generator: 'v0.app',
   manifest: '/site.webmanifest',
   icons: {
     icon: [
