@@ -15,8 +15,13 @@ interface HomePageClientProps {
 export function HomePageClient({ vehicles }: HomePageClientProps) {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null)
 
-  const handleSelectVehicle = (vehicle: Vehicle) => {
+  const handleSelectVehicle = (vehicle: Vehicle | null) => {
     setSelectedVehicle(vehicle)
+
+    if (!vehicle) {
+      return
+    }
+
     setTimeout(() => {
       document.getElementById("rent")?.scrollIntoView({ behavior: "smooth" })
     }, 100)

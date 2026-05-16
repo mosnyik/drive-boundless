@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Fuel, Users, Gauge, Check } from "lucide-react"
+import { Fuel, Users, Gauge, X } from "lucide-react"
 
 export interface Vehicle {
   id: string
@@ -27,7 +27,7 @@ export interface Vehicle {
 
 interface VehicleFleetProps {
   vehicles: Vehicle[]
-  onSelectVehicle?: (vehicle: Vehicle) => void
+  onSelectVehicle?: (vehicle: Vehicle | null) => void
 }
 
 function formatMileage(miles: number) {
@@ -42,6 +42,15 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleSelect = (vehicle: Vehicle) => {
+    if (selectedId === vehicle.id) {
+      setSelectedId(null)
+      onSelectVehicle?.(null)
+      toast.info("Vehicle unselected", {
+        description: `${vehicle.year} ${vehicle.make} ${vehicle.model} removed from your rental request.`,
+      })
+      return
+    }
+
     setSelectedId(vehicle.id)
     onSelectVehicle?.(vehicle)
     toast.success("Vehicle selected", {
@@ -165,8 +174,8 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
                   >
                     {selectedId === vehicle.id ? (
                       <>
-                        <Check className="h-4 w-4 mr-1" />
-                        Selected
+                        <X className="h-4 w-4 mr-1" />
+                        Unselect
                       </>
                     ) : (
                       'Select'
