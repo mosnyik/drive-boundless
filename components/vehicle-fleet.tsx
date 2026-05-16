@@ -25,110 +25,20 @@ export interface Vehicle {
   available: boolean
 }
 
-const sampleVehicles: Vehicle[] = [
-  {
-    id: "1",
-    make: "Mercedes-Benz",
-    model: "S-Class",
-    year: 2024,
-    miles: 12500,
-    color: "Obsidian Black",
-    pricePerDay: 250,
-    minRentalDays: 2,
-    deliveryFee: 50,
-    pickupTimes: "9 AM - 6 PM",
-    fuelType: "Premium",
-    seats: 5,
-    image: "/images/mercedes-s-class.jpg",
-    available: true,
-  },
-  {
-    id: "2",
-    make: "BMW",
-    model: "7 Series",
-    year: 2024,
-    miles: 8200,
-    color: "Alpine White",
-    pricePerDay: 220,
-    minRentalDays: 2,
-    deliveryFee: 50,
-    pickupTimes: "9 AM - 6 PM",
-    fuelType: "Premium",
-    seats: 5,
-    image: "/images/bmw-7-series.jpg",
-    available: true,
-  },
-  {
-    id: "3",
-    make: "Porsche",
-    model: "Cayenne",
-    year: 2023,
-    miles: 18300,
-    color: "Chalk Grey",
-    pricePerDay: 280,
-    minRentalDays: 3,
-    deliveryFee: 75,
-    pickupTimes: "10 AM - 5 PM",
-    fuelType: "Premium",
-    seats: 5,
-    image: "/images/porsche-cayenne.jpg",
-    available: true,
-  },
-  {
-    id: "4",
-    make: "Audi",
-    model: "A8",
-    year: 2024,
-    miles: 5600,
-    color: "Mythos Black",
-    pricePerDay: 200,
-    minRentalDays: 1,
-    deliveryFee: 40,
-    pickupTimes: "8 AM - 7 PM",
-    fuelType: "Premium",
-    seats: 5,
-    image: "/images/audi-a8.jpg",
-    available: true,
-  },
-  {
-    id: "5",
-    make: "Range Rover",
-    model: "Sport",
-    year: 2024,
-    miles: 9800,
-    color: "Santorini Black",
-    pricePerDay: 300,
-    minRentalDays: 2,
-    deliveryFee: 60,
-    pickupTimes: "9 AM - 6 PM",
-    fuelType: "Premium",
-    seats: 5,
-    image: "/images/range-rover-sport.jpg",
-    available: true,
-  },
-  {
-    id: "6",
-    make: "Tesla",
-    model: "Model S Plaid",
-    year: 2024,
-    miles: 3200,
-    color: "Pearl White",
-    pricePerDay: 275,
-    minRentalDays: 1,
-    deliveryFee: 45,
-    pickupTimes: "8 AM - 8 PM",
-    fuelType: "Electric",
-    seats: 5,
-    image: "/images/tesla-model-s.jpg",
-    available: true,
-  },
-]
-
 interface VehicleFleetProps {
+  vehicles: Vehicle[]
   onSelectVehicle?: (vehicle: Vehicle) => void
 }
 
-export function VehicleFleet({ onSelectVehicle }: VehicleFleetProps) {
+function formatMileage(miles: number) {
+  if (miles < 1000) {
+    return `${miles.toLocaleString()} mi`
+  }
+
+  return `${Math.round(miles / 1000).toLocaleString()}k mi`
+}
+
+export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleSelect = (vehicle: Vehicle) => {
@@ -155,8 +65,16 @@ export function VehicleFleet({ onSelectVehicle }: VehicleFleetProps) {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sampleVehicles.map((vehicle) => (
+        {vehicles.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border bg-background/60 p-8 text-center">
+            <p className="font-serif text-2xl mb-2">No vehicles available</p>
+            <p className="text-muted-foreground">
+              Add vehicle documents in Sanity to show them here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vehicles.map((vehicle) => (
             <Card 
               key={vehicle.id}
               className={`group cursor-pointer transition-all duration-300 hover:shadow-lg ${
@@ -211,7 +129,7 @@ export function VehicleFleet({ onSelectVehicle }: VehicleFleetProps) {
                   </div>
                   <div className="flex items-center gap-1.5 text-muted-foreground">
                     <Gauge className="h-4 w-4" />
-                    <span>{(vehicle.miles / 1000).toFixed(0)}k mi</span>
+                    <span>{formatMileage(vehicle.miles)}</span>
                   </div>
                 </div>
 
@@ -257,8 +175,9 @@ export function VehicleFleet({ onSelectVehicle }: VehicleFleetProps) {
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )
