@@ -37,20 +37,21 @@ export function About() {
             About Us
           </p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] mb-8 text-balance">
-            Dedicated to
+            Premium rentals with
             <br />
-            <span className="italic">excellence</span>
+            <span className="italic">local service</span>
           </h2>
           <div className="space-y-6 text-muted-foreground leading-relaxed text-lg">
             <p>
-              Drive Boundless Auto Solutions was founded with a simple mission: to provide 
-              an exceptional car rental experience that goes beyond just transportation. 
-              We believe every journey should be memorable.
+              Drive Boundless Auto Solutions is a Lawrenceville, Georgia car rental company
+              focused on clean, dependable, premium vehicles and a booking experience that
+              feels straightforward from the first request to the final return.
             </p>
             <p>
-              Our carefully curated fleet features the finest vehicles from trusted 
-              manufacturers, each maintained to the highest standards. From business 
-              trips to special occasions, we have the perfect vehicle for your needs.
+              Our curated fleet supports executive travel, airport-area trips, weekend plans,
+              weddings, events, and local transportation needs throughout Gwinnett County and
+              the Atlanta metro area. Each rental is reviewed by our team so customers get the
+              right vehicle, clear terms, and responsive support.
             </p>
           </div>
         </div>
@@ -89,7 +90,7 @@ export function About() {
         <div className="mt-20 pt-16 border-t border-border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <p className="text-muted-foreground text-center md:text-left">
-              Trusted by thousands of customers across Georgia
+              Serving Lawrenceville, Gwinnett County, metro Atlanta, and customers across Georgia
             </p>
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">

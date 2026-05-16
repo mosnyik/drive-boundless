@@ -254,14 +254,14 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-12">
           <p className="text-sm uppercase tracking-[0.2em] text-accent mb-4">
-            Book Your Ride
+            Reserve a Rental
           </p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] mb-6 text-balance">
-            Rental <span className="italic">application</span>
+            Start your car rental <span className="italic">request</span>
           </h2>
           <p className="max-w-2xl mx-auto text-muted-foreground text-lg">
-            Complete the form below to request a rental. All bookings require approval 
-            and a signed Georgia Motor Vehicle Rental Agreement.
+            Request a premium vehicle rental in Lawrenceville, GA. All bookings require
+            approval, verified renter details, and a signed Georgia Motor Vehicle Rental Agreement.
           </p>
         </div>
 
@@ -742,6 +742,10 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                       <p>Drive Boundless Auto Solutions</p>
                       <p>Boundless Auto Solutions / Turchese Solutions LLC</p>
                       <p>driveboundless.com</p>
+                      <p>267 Langley Drive, Suite 1438</p>
+                      <p>Lawrenceville, GA 30046</p>
+                      <p>(470) 403-0704</p>
+                      <p>info@turcheseconsulting.com</p>
                       <p className="text-xs text-muted-foreground">(&quot;Owner&quot; or &quot;Company&quot;)</p>
                     </div>
                     <div className="space-y-2">

@@ -10,7 +10,7 @@ export function Hero() {
       <div className="absolute inset-0">
         <Image
           src="/images/hero-bg.jpg"
-          alt="Luxury car fleet"
+          alt="Luxury car rentals from Drive Boundless Auto Solutions in Lawrenceville, Georgia"
           fill
           className="object-cover"
           priority
@@ -21,18 +21,18 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-32 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-primary-foreground/60 mb-6">
-          Drive Boundless Auto Solutions
+          Lawrenceville, GA Premium Car Rentals
         </p>
 
         <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium text-primary-foreground leading-[1.1] mb-8 text-balance">
-          Your journey,
+          Luxury car rentals,
           <br />
-          <span className="italic">boundless</span>
+          <span className="italic">made simple</span>
         </h1>
 
         <p className="max-w-xl mx-auto text-lg text-primary-foreground/70 mb-12 text-pretty">
-          Premium vehicle rentals with exceptional service. Whether for business
-          or pleasure, we make every mile memorable.
+          Drive Boundless Auto Solutions provides premium vehicle rentals for business travel,
+          special occasions, and everyday trips across Lawrenceville, Gwinnett County, and metro Atlanta.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

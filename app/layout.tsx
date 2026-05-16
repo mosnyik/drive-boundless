@@ -14,8 +14,54 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Drive Boundless Auto Solutions | Premium Car Rental',
-  description: 'Drive Boundless Auto Solutions - Your trusted partner for premium vehicle rentals. Simple booking, exceptional service, boundless possibilities.',
+  metadataBase: new URL('https://driveboundless.com'),
+  title: {
+    default: 'Drive Boundless Auto Solutions | Luxury Car Rentals in Lawrenceville, GA',
+    template: '%s | Drive Boundless Auto Solutions',
+  },
+  description: 'Drive Boundless Auto Solutions provides premium and luxury car rentals in Lawrenceville, Gwinnett County, and metro Atlanta with a curated fleet, flexible booking, and professional service.',
+  keywords: [
+    'luxury car rental Lawrenceville GA',
+    'premium car rental Gwinnett County',
+    'Atlanta luxury car rental',
+    'executive car rental Georgia',
+    'Drive Boundless Auto Solutions',
+    'Turchese Solutions LLC',
+    'car rental Lawrenceville GA',
+  ],
+  applicationName: 'Drive Boundless Auto Solutions',
+  authors: [{ name: 'Drive Boundless Auto Solutions' }],
+  creator: 'Drive Boundless Auto Solutions',
+  publisher: 'Drive Boundless Auto Solutions',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Drive Boundless Auto Solutions | Luxury Car Rentals in Lawrenceville, GA',
+    description: 'Premium vehicle rentals for business travel, special occasions, and everyday driving across Lawrenceville, Gwinnett County, and metro Atlanta.',
+    url: '/',
+    siteName: 'Drive Boundless Auto Solutions',
+    locale: 'en_US',
+    type: 'website',
+    images: [
+      {
+        url: '/images/hero-bg.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Premium rental vehicles from Drive Boundless Auto Solutions',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Drive Boundless Auto Solutions | Luxury Car Rentals in Lawrenceville, GA',
+    description: 'Premium and luxury vehicle rentals serving Lawrenceville, Gwinnett County, and metro Atlanta.',
+    images: ['/images/hero-bg.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   manifest: '/site.webmanifest',
   icons: {
     icon: [

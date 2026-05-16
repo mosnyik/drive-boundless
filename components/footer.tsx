@@ -39,9 +39,15 @@ export function Footer() {
           <div>
             <h4 className="font-medium mb-4">Contact</h4>
             <ul className="space-y-3 text-primary-foreground/70">
-              <li>info@driveboundless.com</li>
-              <li>(555) 123-4567</li>
-              <li>Local Service Area</li>
+              <li>info@turcheseconsulting.com</li>
+              <li>(470) 403-0704</li>
+              <li>
+                267 Langley Drive
+                <br />
+                Suite 1438
+                <br />
+                Lawrenceville, GA 30046
+              </li>
             </ul>
           </div>
         </div>
