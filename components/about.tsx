@@ -5,8 +5,8 @@ export function About() {
     {
       icon: Car,
       value: "50+",
-      label: "Premium Vehicles",
-      description: "Curated luxury fleet"
+      label: "Economy Vehicles",
+      description: "Practical rental options"
     },
     {
       icon: Users,
@@ -37,21 +37,21 @@ export function About() {
             About Us
           </p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] mb-8 text-balance">
-            Premium rentals with
+            Affordable rentals with
             <br />
             <span className="italic">local service</span>
           </h2>
           <div className="space-y-6 text-muted-foreground leading-relaxed text-lg">
             <p>
               Drive Boundless Auto Solutions is a Lawrenceville, Georgia car rental company
-              focused on clean, dependable, premium vehicles and a booking experience that
+              focused on clean, dependable, economy vehicles and a booking experience that
               feels straightforward from the first request to the final return.
             </p>
             <p>
-              Our curated fleet supports executive travel, airport-area trips, weekend plans,
-              weddings, events, and local transportation needs throughout Gwinnett County and
-              the Atlanta metro area. Each rental is reviewed by our team so customers get the
-              right vehicle, clear terms, and responsive support.
+              Our fleet supports everyday commuting, rideshare backup needs, airport-area trips,
+              weekend plans, and local transportation throughout Gwinnett County and the Atlanta
+              metro area. Each rental is reviewed by our team so customers get the right vehicle,
+              clear terms, and responsive support.
             </p>
           </div>
         </div>

@@ -260,7 +260,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
             Start your car rental <span className="italic">request</span>
           </h2>
           <p className="max-w-2xl mx-auto text-muted-foreground text-lg">
-            Request a premium vehicle rental in Lawrenceville, GA. All bookings require
+            Request an economy vehicle rental in Lawrenceville, GA. All bookings require
             approval, verified renter details, and a signed Georgia Motor Vehicle Rental Agreement.
           </p>
         </div>

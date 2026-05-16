@@ -78,7 +78,7 @@ export const vehicle = defineType({
       title: 'Fuel type',
       type: 'string',
       description: 'Fuel or powertrain label shown with the fuel icon on the vehicle card.',
-      initialValue: 'Premium',
+      initialValue: 'Regular',
       options: {
         list: [
           {title: 'Regular', value: 'Regular'},

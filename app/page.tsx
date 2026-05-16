@@ -16,7 +16,7 @@ export default async function Home() {
         telephone: "+14704030704",
         image: "https://driveboundless.com/images/hero-bg.jpg",
         description:
-          "Premium and luxury car rentals serving Lawrenceville, Gwinnett County, and metro Atlanta.",
+          "Affordable economy car rentals serving Lawrenceville, Gwinnett County, and metro Atlanta.",
         address: {
           "@type": "PostalAddress",
           streetAddress: "267 Langley Drive, Suite 1438",
@@ -34,7 +34,7 @@ export default async function Home() {
         priceRange: "$$",
         makesOffer: {
           "@type": "OfferCatalog",
-          name: "Premium car rental fleet",
+          name: "Economy car rental fleet",
           itemListElement: vehicles.slice(0, 12).map((vehicle) => ({
             "@type": "Offer",
             name: `${vehicle.year} ${vehicle.make} ${vehicle.model} rental`,

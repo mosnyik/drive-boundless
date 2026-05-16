@@ -10,8 +10,8 @@ export function Footer() {
               Drive Boundless
             </Link>
             <p className="mt-4 text-primary-foreground/70 max-w-md leading-relaxed">
-              Drive Boundless Auto Solutions - Your trusted partner for premium vehicle rentals. 
-              Every journey, boundless possibilities.
+              Drive Boundless Auto Solutions - affordable economy car rentals for everyday
+              transportation across Lawrenceville, Gwinnett County, and metro Atlanta.
             </p>
           </div>
           

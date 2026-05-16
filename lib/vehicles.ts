@@ -12,7 +12,7 @@ const vehiclesQuery = `*[_type == "vehicle"] | order(coalesce(orderRank, sortOrd
   "minRentalDays": coalesce(minRentalDays, minimumRentalDays, 1),
   "deliveryFee": coalesce(deliveryFee, 0),
   "pickupTimes": coalesce(pickupTimes, pickupTime, "9 AM - 6 PM"),
-  "fuelType": coalesce(fuelType, fuel, "Premium"),
+  "fuelType": coalesce(fuelType, fuel, "Regular"),
   "seats": coalesce(seats, seatCount, 5),
   "image": coalesce(image.asset->url, mainImage.asset->url, images[0].asset->url),
   "available": coalesce(available, isAvailable, true)
@@ -57,7 +57,7 @@ function normalizeVehicle(vehicle: SanityVehicle): Vehicle | null {
     minRentalDays: toNumber(vehicle.minRentalDays, 1),
     deliveryFee: toNumber(vehicle.deliveryFee, 0),
     pickupTimes: normalizePickupTimes(vehicle.pickupTimes),
-    fuelType: toString(vehicle.fuelType, "Premium"),
+    fuelType: toString(vehicle.fuelType, "Regular"),
     seats: toNumber(vehicle.seats, 5),
     image: typeof vehicle.image === "string" ? vehicle.image : undefined,
     available: vehicle.available !== false,

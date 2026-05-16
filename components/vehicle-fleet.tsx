@@ -66,11 +66,11 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
             Our Fleet
           </p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] mb-6 text-balance">
-            Premium rental <span className="italic">vehicles</span>
+            Economy rental <span className="italic">vehicles</span>
           </h2>
           <p className="max-w-2xl mx-auto text-muted-foreground text-lg">
-            Browse luxury and premium car rentals available near Lawrenceville and metro Atlanta.
-            Each vehicle is maintained for comfort, presentation, and reliable travel.
+            Browse affordable car rentals available near Lawrenceville and metro Atlanta.
+            Each vehicle is maintained for clean, comfortable, and reliable everyday travel.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
                   {vehicle.image ? (
                     <Image
                       src={vehicle.image}
-                      alt={`${vehicle.year} ${vehicle.make} ${vehicle.model} premium car rental in Lawrenceville GA`}
+                      alt={`${vehicle.year} ${vehicle.make} ${vehicle.model} economy car rental in Lawrenceville GA`}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
