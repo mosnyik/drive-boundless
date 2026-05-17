@@ -34,24 +34,29 @@ export function About() {
         {/* Header */}
         <div className="max-w-3xl mb-20">
           <p className="text-sm uppercase tracking-[0.2em] text-accent mb-4">
-            About Us
+            Why We&apos;re Here
           </p>
           <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] mb-8 text-balance">
-            Affordable rentals with
+            Built for people who
             <br />
-            <span className="italic">local service</span>
+            <span className="italic">need to keep moving</span>
           </h2>
           <div className="space-y-6 text-muted-foreground leading-relaxed text-lg">
             <p>
-              Drive Boundless Auto Solutions is a Lawrenceville, Georgia car rental company
-              focused on clean, dependable, economy vehicles and a booking experience that
-              feels straightforward from the first request to the final return.
+              Your car&apos;s in the shop. Rentals cost too much. Borrowing a friend&apos;s car
+              isn&apos;t working. We built Drive Boundless for people who can&apos;t afford to be
+              without a car.
             </p>
             <p>
-              Our fleet supports everyday commuting, rideshare backup needs, airport-area trips,
-              weekend plans, and local transportation throughout Gwinnett County and the Atlanta
-              metro area. Each rental is reviewed by our team so customers get the right vehicle,
-              clear terms, and responsive support.
+              Flat weekly or monthly rate. Unlimited miles. We handle maintenance. If something
+              breaks, text us and we&apos;ll get you back on the road.
+            </p>
+            <p>
+              We&apos;re local to Gwinnett County. We keep it simple. We keep you moving. No
+              credit games. No corporate runaround. Just the car you need to handle your business.
+            </p>
+            <p className="font-medium text-foreground">
+              Drive Boundless - Your work depends on it. So do we.
             </p>
           </div>
         </div>

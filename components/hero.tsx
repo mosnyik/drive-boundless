@@ -21,19 +21,22 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-32 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-primary-foreground/60 mb-6">
-          Lawrenceville, GA Economy Car Rentals
+          Lawrenceville, GA Auto Leasing Company
         </p>
 
         <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium text-primary-foreground leading-[1.1] mb-8 text-balance">
-          Economy car rentals,
+          Stop Working to Pay
           <br />
-          <span className="italic">made simple</span>
+          <span className="italic">For Your Car.</span>
         </h1>
 
-        <p className="max-w-xl mx-auto text-lg text-primary-foreground/70 mb-12 text-pretty">
-          Drive Boundless Auto Solutions provides affordable, dependable vehicles for daily
-          transportation, local errands, weekend trips, and flexible travel across Lawrenceville,
-          Gwinnett County, and metro Atlanta.
+        <p className="max-w-2xl mx-auto text-lg text-primary-foreground/70 mb-4 text-pretty">
+          We give you a dependable work car for one flat weekly rate.
+          Unlimited miles, maintenance and insurance included. No contracts.
+        </p>
+
+        <p className="max-w-xl mx-auto text-base text-primary-foreground/60 mb-12 text-pretty">
+          Local fleet. Real support. Same-day pickup available.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

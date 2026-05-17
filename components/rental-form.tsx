@@ -232,8 +232,16 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
     { num: 4, title: "Agreement", icon: Shield },
   ]
 
+  const placeholder = (text: string) => (
+    <span className="text-muted-foreground/45 italic">{text}</span>
+  )
+
+  const valueOrPlaceholder = (value: string, fallback = "_______________") => {
+    return value || placeholder(fallback)
+  }
+
   const formatDate = (dateStr: string) => {
-    if (!dateStr) return "_______________"
+    if (!dateStr) return placeholder("_______________")
     return new Date(dateStr).toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
@@ -242,7 +250,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   }
 
   const formatDateTime = (dateStr: string, timeStr: string) => {
-    if (!dateStr) return "_______________"
+    if (!dateStr) return placeholder("_______________")
     const date = formatDate(dateStr)
     return timeStr ? `${date} at ${timeStr}` : date
   }
@@ -778,12 +786,12 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     </div>
                     <div className="space-y-2">
                       <h4 className="font-semibold text-foreground">Renter:</h4>
-                      <p><strong>Name:</strong> {formData.fullName || "_______________"}</p>
-                      <p><strong>License:</strong> {formData.licenseNumber || "_______________"} / {formData.licenseState || "__"}</p>
-                      <p><strong>Address:</strong> {formData.address ? `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}` : "_______________"}</p>
-                      <p><strong>Phone:</strong> {formData.phone || "_______________"}</p>
-                      <p><strong>Email:</strong> {formData.email || "_______________"}</p>
-                      <p><strong>Insurance:</strong> {formData.insuranceCarrier || "Not provided at submission"} {formData.insurancePolicyNumber ? `- ${formData.insurancePolicyNumber}` : ""}</p>
+                      <p><strong>Name:</strong> {valueOrPlaceholder(formData.fullName)}</p>
+                      <p><strong>License:</strong> {valueOrPlaceholder(formData.licenseNumber)} / {valueOrPlaceholder(formData.licenseState, "__")}</p>
+                      <p><strong>Address:</strong> {formData.address ? `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}` : placeholder("_______________")}</p>
+                      <p><strong>Phone:</strong> {valueOrPlaceholder(formData.phone)}</p>
+                      <p><strong>Email:</strong> {valueOrPlaceholder(formData.email)}</p>
+                      <p><strong>Insurance:</strong> {formData.insuranceCarrier || placeholder("Not provided at submission")} {formData.insurancePolicyNumber ? `- ${formData.insurancePolicyNumber}` : ""}</p>
                       <p className="text-xs text-muted-foreground">(&quot;Renter&quot;)</p>
                     </div>
                   </div>
@@ -855,10 +863,10 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     <h4 className="font-semibold text-foreground mb-2">5. AUTHORIZED DRIVERS</h4>
                     <p className="mb-2">Only the following individuals may operate the Vehicle:</p>
                     <ol className="list-decimal pl-6 space-y-1">
-                      <li><strong>Primary Renter:</strong> {formData.fullName || "_______________"}</li>
+                      <li><strong>Primary Renter:</strong> {valueOrPlaceholder(formData.fullName)}</li>
                       {additionalDrivers.map((driver, idx) => (
                         <li key={idx}>
-                          <strong>Additional Driver {idx + 1}:</strong> {driver.name || "_______________"} (License: {driver.licenseNumber || "___"} / {driver.licenseState || "__"})
+                          <strong>Additional Driver {idx + 1}:</strong> {valueOrPlaceholder(driver.name)} (License: {valueOrPlaceholder(driver.licenseNumber, "___")} / {valueOrPlaceholder(driver.licenseState, "__")})
                         </li>
                       ))}
                     </ol>
@@ -870,7 +878,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                   {/* Section 6: Insurance */}
                   <div className="border-t border-border pt-4">
                     <h4 className="font-semibold text-foreground mb-2">6. INSURANCE</h4>
-                    <p><strong>Renter&apos;s Insurance:</strong> {formData.insuranceCarrier || "Not provided at submission"} {formData.insurancePolicyNumber ? `- Policy #${formData.insurancePolicyNumber}` : ""}</p>
+                    <p><strong>Renter&apos;s Insurance:</strong> {formData.insuranceCarrier || placeholder("Not provided at submission")} {formData.insurancePolicyNumber ? `- Policy #${formData.insurancePolicyNumber}` : ""}</p>
                     <p className="mt-2 text-muted-foreground">
                       Insurance details may be collected during follow-up when they are not provided with this application. Proof of insurance may be required before the Vehicle is released. The Renter is responsible for any deductible, excluded loss, or uninsured damage caused during the rental period.
                     </p>
@@ -1005,15 +1013,15 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     <div className="grid sm:grid-cols-2 gap-6 mt-4">
                       <div>
                         <p className="font-medium text-foreground">RENTER</p>
-                        <p className="mt-2">Name: {formData.fullName || "_______________"}</p>
-                        <p>Signature: _________________________________</p>
+                        <p className="mt-2">Name: {valueOrPlaceholder(formData.fullName)}</p>
+                        <p>Signature: {placeholder("_________________________________")}</p>
                         <p>Date: {formatDate(new Date().toISOString().split('T')[0])}</p>
                       </div>
                       <div>
                         <p className="font-medium text-foreground">OWNER / COMPANY</p>
                         <p className="mt-2">Drive Boundless Auto Solutions</p>
-                        <p>Signature: _________________________________</p>
-                        <p>Date: _______________</p>
+                        <p>Signature: {placeholder("_________________________________")}</p>
+                        <p>Date: {placeholder("_______________")}</p>
                       </div>
                     </div>
                     {additionalDrivers.length > 0 && (
@@ -1021,9 +1029,9 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                         {additionalDrivers.map((driver, idx) => (
                           <div key={idx} className="mb-4">
                             <p className="font-medium text-foreground">ADDITIONAL DRIVER {idx + 1}</p>
-                            <p className="mt-2">Name: {driver.name || "_______________"}</p>
-                            <p>Signature: _________________________________</p>
-                            <p>Date: _______________</p>
+                            <p className="mt-2">Name: {valueOrPlaceholder(driver.name)}</p>
+                            <p>Signature: {placeholder("_________________________________")}</p>
+                            <p>Date: {placeholder("_______________")}</p>
                           </div>
                         ))}
                       </div>
@@ -1045,7 +1053,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     }}
                   />
                   <Label htmlFor="agreement" className="text-sm leading-relaxed cursor-pointer">
-                    I, <strong>{formData.fullName || "[Renter Name]"}</strong>, have read, understood, and agree to the terms of this Georgia Motor Vehicle Rental Agreement. 
+                    I, <strong>{formData.fullName || placeholder("[Renter Name]")}</strong>, have read, understood, and agree to the terms of this Georgia Motor Vehicle Rental Agreement. 
                     I understand that this is a legally binding contract and that I am responsible for all obligations outlined herein.
                   </Label>
                 </div>
