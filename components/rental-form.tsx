@@ -767,7 +767,13 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
               <CardContent className="space-y-6">
                 <div className="bg-muted rounded-lg p-6 max-h-[500px] overflow-y-auto text-sm space-y-6">
                   <div className="text-center border-b border-border pb-4">
+                    <h3 className="font-bold text-lg text-foreground">BOUNDLESS AUTO SOLUTIONS</h3>
                     <h3 className="font-bold text-lg text-foreground">GEORGIA MOTOR VEHICLE RENTAL AGREEMENT</h3>
+                    <div className="text-muted-foreground mt-2 space-y-1">
+                      <p>Operated by Turchese Solutions LLC</p>
+                      <p>Email: info@turcheseconsulting.com</p>
+                      <p>Phone: +1 929-213-5106</p>
+                    </div>
                     <p className="text-muted-foreground mt-2">This Motor Vehicle Rental Agreement (&quot;Agreement&quot;) is entered into between:</p>
                   </div>
 
@@ -775,12 +781,9 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <h4 className="font-semibold text-foreground">Rental Company:</h4>
-                      <p>Drive Boundless Auto Solutions</p>
-                      <p>Boundless Auto Solutions / Turchese Solutions LLC</p>
-                      <p>driveboundless.com</p>
-                      <p>267 Langley Drive, Suite 1438</p>
-                      <p>Lawrenceville, GA 30046</p>
-                      <p>(470) 403-0704</p>
+                      <p>Turchese Solutions LLC d/b/a Boundless Auto Solutions</p>
+                      <p>Address: To be provided at pickup</p>
+                      <p>Phone: +1 929-213-5106</p>
                       <p>info@turcheseconsulting.com</p>
                       <p className="text-xs text-muted-foreground">(&quot;Owner&quot; or &quot;Company&quot;)</p>
                     </div>
@@ -796,10 +799,9 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     </div>
                   </div>
 
-                  {/* Section 1: Vehicle Information */}
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">1. VEHICLE INFORMATION</h4>
-                    <p className="mb-2">The Owner agrees to rent the following vehicle to the Renter:</p>
+                    <h4 className="font-semibold text-foreground mb-2">IDENTIFICATION OF THE RENTAL VEHICLE</h4>
+                    <p className="mb-2">Owner hereby agrees to rent to Renter a passenger vehicle identified as follows:</p>
                     {selectedVehicle ? (
                       <ul className="list-disc pl-6 space-y-1">
                         <li><strong>Make:</strong> {selectedVehicle.make}</li>
@@ -812,216 +814,242 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     ) : (
                       <p className="text-muted-foreground italic">No vehicle selected</p>
                     )}
-                  </div>
-
-                  {/* Section 2: Rental Term */}
-                  <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">2. RENTAL TERM</h4>
-                    <p><strong>Rental Start Date & Time:</strong> {formatDateTime(formData.startDate, formData.startTime)}</p>
-                    <p><strong>Rental End Date & Time:</strong> {formatDateTime(formData.endDate, formData.endTime)}</p>
                     <p className="mt-2 text-muted-foreground">
-                      The Renter agrees to return the Vehicle on or before the agreed return date and time unless an extension is approved in writing by the Owner. Extensions are not guaranteed and are subject to vehicle availability and timely payment. If the Vehicle is returned late without authorization, additional daily rental charges and reasonable recovery expenses may apply.
+                      This Car Rental Agreement is entered into between Turchese Solutions LLC DBA Boundless Autos and {valueOrPlaceholder(formData.fullName, "Renter")} and outlines the respective rights and obligations of the Parties relating to the rental of a vehicle. Renter is not Owner&apos;s agent for any purpose and may not assign, delegate, or transfer obligations under this Agreement.
                     </p>
                   </div>
 
-                  {/* Section 3: Rental Payments */}
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">3. RENTAL PAYMENTS</h4>
+                    <h4 className="font-semibold text-foreground mb-2">1. RENTAL TERM</h4>
+                    <p><strong>Estimated Start Date:</strong> {formatDateTime(formData.startDate, formData.startTime)}</p>
+                    <p><strong>Estimated End Date:</strong> {formatDateTime(formData.endDate, formData.endTime)}</p>
+                    <p className="mt-2 text-muted-foreground">
+                      The term begins at vehicle pickup and continues until the vehicle is returned to Owner and all Agreement terms have been completed by both Parties. If Client returns the rental vehicle before the rental week is complete, Client remains responsible for the full weekly payment. A refundable security deposit of $50 is due at initial pickup. Weekly payment is due by 5:00 PM, or a $50 late fee will apply.
+                    </p>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">2. RENTAL FEES</h4>
                     {selectedVehicle && (
                       <ul className="list-disc pl-6 space-y-1 mb-2">
-                        <li><strong>Daily Rental Rate:</strong> ${selectedVehicle.pricePerDay}</li>
-                        <li><strong>Weekly Rental Rate:</strong> ${(selectedVehicle.pricePerDay * 7 * 0.9).toFixed(0)} (10% weekly discount)</li>
-                        <li><strong>Security Deposit:</strong> To be determined</li>
+                        <li><strong>Base Fee:</strong> ${(selectedVehicle.pricePerDay * 7 * 0.9).toFixed(0)} per week</li>
+                        <li><strong>Rental Fee for Days Beyond Rental Term:</strong> ${selectedVehicle.pricePerDay} per day</li>
+                        <li><strong>Security Deposit:</strong> $50</li>
                         <li><strong>Delivery Fee:</strong> ${selectedVehicle.deliveryFee}</li>
                       </ul>
                     )}
-                    <p><strong>Weekly payments are due by:</strong> {formData.paymentDueDay} each week.</p>
-                    <p className="mt-2 text-muted-foreground">
-                      If payment is not received within 24 hours of the due date, the Owner may suspend the rental and demand immediate return of the Vehicle. Repeated late payments or failure to return the Vehicle after demand may constitute a material breach of this Agreement.
-                    </p>
-                  </div>
-
-                  {/* Section 4: Security Deposit */}
-                  <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">4. SECURITY DEPOSIT</h4>
-                    <p>The security deposit may be used to cover:</p>
-                    <ul className="list-disc pl-6 space-y-1 mt-2">
-                      <li>Unpaid rental charges</li>
-                      <li>Excessive cleaning costs</li>
-                      <li>Smoking remediation</li>
-                      <li>Lost keys</li>
-                      <li>Tolls, tickets, and administrative fees</li>
-                      <li>Physical damage beyond ordinary wear and tear</li>
+                    <p><strong>Weekly payments are due by:</strong> 5:00 PM on {formData.paymentDueDay} each week.</p>
+                    <ul className="list-disc pl-6 space-y-1 mt-2 text-muted-foreground">
+                      <li>Late fee is $50 per day. On Day 2, the car may be repossessed.</li>
+                      <li>To receive an extension, half of the weekly payment must be paid on the due date. If payment is not received, the vehicle must be returned.</li>
+                      <li>Renter is responsible for a $1,000 deductible when damage is done to the vehicle if damages are under $1,000.</li>
+                      <li>If the vehicle is repossessed for missed payment or any other reason, the deposit will be forfeited.</li>
+                      <li>Vehicle is for in-state use only. If taken out of state, it may be reported stolen.</li>
+                      <li>Renter is responsible for any damage to the vehicle.</li>
+                      <li>If Renter terminates the agreement before the end date, Renter forfeits the deposit.</li>
                     </ul>
                     <p className="mt-2 text-muted-foreground">
-                      Any unused portion of the deposit will be refunded within a reasonable time after the Vehicle is returned and inspected. The Renter remains responsible for costs exceeding the deposit amount.
+                      The Parties may shorten or extend the estimated rental term by written mutual consent. If the agreement is shortened, the Renter remains liable for the full weekly payment.
                     </p>
                   </div>
 
-                  {/* Section 5: Authorized Drivers */}
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">5. AUTHORIZED DRIVERS</h4>
-                    <p className="mb-2">Only the following individuals may operate the Vehicle:</p>
+                    <h4 className="font-semibold text-foreground mb-2">3. DEPOSIT</h4>
+                    <p>A deposit fee of $50 is required at the initial meeting for the rental vehicle. This deposit is fully refundable provided that:</p>
+                    <ul className="list-disc pl-6 space-y-1 mt-2">
+                      <li>Vehicle is returned in the same condition in which it was released.</li>
+                      <li>No smoke or odor is present in the vehicle.</li>
+                      <li>No missed payment requiring repossession.</li>
+                      <li>Vehicle is not excessively dirty or filled with trash beyond normal use.</li>
+                      <li>Key is not misplaced.</li>
+                    </ul>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">4. MILEAGE</h4>
+                    <p><strong>Mileage Allotted:</strong> {formData.mileageAllowance === "unlimited" ? "Unlimited" : `${formData.mileageAllowance} miles per week`}</p>
+                    <p><strong>Rate for Extra Mileage:</strong> {formData.mileageAllowance === "unlimited" ? "N/A" : "$0.25 per mile over allowance"}</p>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">5. ADDITIONAL CHARGES AND CONDITIONS</h4>
+                    <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+                      <li>A reasonable fee of $60 will be charged for interior cleaning if stains, dirt, odor, or soiling attributable to Renter&apos;s use cannot be cleaned using standard post-rental procedures.</li>
+                      <li>If the key or key fob is not returned with the vehicle, a $300 replacement fee will apply.</li>
+                      <li>Smoking, including e-cigarettes, is prohibited in the vehicle. If the car smells of smoke or vapor residue, the full deposit will be forfeited.</li>
+                      <li>Renter and any third party billed for rental charges are jointly and severally responsible for payment of all charges.</li>
+                      <li>If the vehicle uses automatic toll payment capability, Renter will be charged the toll fee plus an administrative fee.</li>
+                      <li>Turchese Solutions LLC DBA Boundless Autos may rescind the Rental Agreement in the event of a manifest pricing or description error.</li>
+                    </ul>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">6. TAXES, SURCHARGES & FEES</h4>
+                    <p className="text-muted-foreground">
+                      Renter will pay all applicable taxes and any additional charges provided in the Rental Agreement that are above the base rental rate. These may include surcharges and recovery fees.
+                    </p>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">7. CHANGES</h4>
+                    <p className="text-muted-foreground">
+                      Any change to this Rental Agreement or Owner&apos;s rights must be in writing and signed by an authorized officer. Turchese Solutions LLC DBA Boundless Autos reserves the right to modify these Terms and Conditions upon written or electronic notice. Such changes apply only to future rentals after notice has been given.
+                    </p>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">8. WHO MAY DRIVE THE CAR</h4>
+                    <p className="mb-2">Renter represents that Renter is a capable and legally licensed driver and will remain so during the rental term. Only the following individuals may drive the vehicle:</p>
                     <ol className="list-decimal pl-6 space-y-1">
                       <li><strong>Primary Renter:</strong> {valueOrPlaceholder(formData.fullName)}</li>
+                      <li>Renter&apos;s spouse or domestic partner, if approved by Owner</li>
+                      <li>Employer or fellow employee under a corporate rental arrangement, if approved by Owner</li>
                       {additionalDrivers.map((driver, idx) => (
                         <li key={idx}>
-                          <strong>Additional Driver {idx + 1}:</strong> {valueOrPlaceholder(driver.name)} (License: {valueOrPlaceholder(driver.licenseNumber, "___")} / {valueOrPlaceholder(driver.licenseState, "__")})
+                          <strong>Approved Additional Driver {idx + 1}:</strong> {valueOrPlaceholder(driver.name)} (License: {valueOrPlaceholder(driver.licenseNumber, "___")} / {valueOrPlaceholder(driver.licenseState, "__")})
                         </li>
                       ))}
                     </ol>
                     <p className="mt-2 text-muted-foreground">
-                      All drivers must be at least 23 years old, possess a valid driver&apos;s license, and maintain legally required automobile insurance. The Renter remains fully responsible for the Vehicle and all obligations under this Agreement regardless of who operates the Vehicle.
+                      All permitted drivers must be at least 25 years old, hold a valid driver&apos;s license, and be approved by Owner. Any additional driver must sign an additional driver form. Renter remains financially responsible for the vehicle regardless of who operates it.
                     </p>
                   </div>
 
-                  {/* Section 6: Insurance */}
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">6. INSURANCE</h4>
-                    <p><strong>Renter&apos;s Insurance:</strong> {formData.insuranceCarrier || placeholder("Not provided at submission")} {formData.insurancePolicyNumber ? `- Policy #${formData.insurancePolicyNumber}` : ""}</p>
-                    <p className="mt-2 text-muted-foreground">
-                      Insurance details may be collected during follow-up when they are not provided with this application. Proof of insurance may be required before the Vehicle is released. The Renter is responsible for any deductible, excluded loss, or uninsured damage caused during the rental period.
-                    </p>
-                  </div>
-
-                  {/* Section 7-8: Condition & Use */}
-                  <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">7. CONDITION OF VEHICLE</h4>
+                    <h4 className="font-semibold text-foreground mb-2">9. RETURN OF THE CAR</h4>
                     <p className="text-muted-foreground">
-                      The Renter acknowledges inspection of the Vehicle before taking possession. Any pre-existing damage shall be documented separately in a Vehicle Condition Report signed by both parties. The Vehicle must be returned in substantially the same condition, ordinary wear and tear excepted.
+                      Renter agrees to return the vehicle in the same condition received, ordinary wear and tear excepted, at the agreed date, time, and location. If returned late, additional rental fees and late return fees may apply. Extensions must be requested and approved before the return date.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">8. USE OF VEHICLE</h4>
-                    <p>The Vehicle shall not be used:</p>
+                    <h4 className="font-semibold text-foreground mb-2">10. REPOSSESSING THE CAR</h4>
+                    <p className="mb-2">Turchese Solutions LLC DBA Boundless Autos may repossess the vehicle at any time for reasons including but not limited to:</p>
+                    <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+                      <li>Failure to return vehicle when due</li>
+                      <li>Missed payments</li>
+                      <li>Illegal use</li>
+                      <li>Violation of Rental Agreement</li>
+                      <li>Abandonment</li>
+                    </ul>
+                    <p className="mt-2 text-muted-foreground">Renter agrees to reimburse all repossession costs and forfeit the security deposit if repossession occurs.</p>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">11. DAMAGE TO / LOSS OF THE CAR</h4>
+                    <p className="mb-2">Renter and/or Renter&apos;s insurance are responsible for all loss or damage to the vehicle regardless of cause. If the vehicle is damaged, stolen, or lost, Renter is responsible for:</p>
+                    <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+                      <li>Repair costs</li>
+                      <li>Diminished value</li>
+                      <li>Fair market value</li>
+                      <li>Loss of use</li>
+                      <li>Administrative fees</li>
+                      <li>Towing and storage fees</li>
+                    </ul>
+                    <p className="mt-2 text-muted-foreground">If using in-house insurance, Renter is responsible for a $1,000 deductible. Unauthorized repairs will not be reimbursed.</p>
+                  </div>
+
+                  <div className="border-t border-border pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">12. PROHIBITED USE OF THE CAR</h4>
+                    <p>The following actions automatically terminate this Rental Agreement and void all liability protections:</p>
                     <ul className="list-disc pl-6 space-y-1 mt-2 text-muted-foreground">
-                      <li>For illegal purposes</li>
-                      <li>In racing, speed testing, or off-road driving</li>
-                      <li>To transport illegal substances or contraband</li>
-                      <li>While under the influence of drugs or alcohol</li>
-                      <li>To transport passengers for hire unless expressly authorized</li>
-                      <li>By unauthorized drivers</li>
-                      <li>To tow another vehicle unless approved in writing</li>
+                      <li>Unauthorized drivers</li>
+                      <li>Carrying passengers/property for hire</li>
+                      <li>Towing</li>
+                      <li>Racing</li>
+                      <li>Off-road driving</li>
+                      <li>Driving under the influence</li>
+                      <li>Illegal activity</li>
+                      <li>Reckless driving</li>
+                      <li>Driving into Mexico without permission</li>
+                      <li>Failure to report accidents</li>
+                      <li>Fraud or misrepresentation</li>
+                      <li>Leaving keys in unattended vehicle</li>
+                      <li>Texting or handheld phone use while driving</li>
                     </ul>
                     <p className="mt-2 text-muted-foreground">
-                      Out-of-state travel must be approved in advance by the Owner. Violation of this section may result in termination of the rental and additional liability as permitted by Georgia law.
+                      Violations make Renter liable for all related damages, penalties, legal fees, and recovery costs.
                     </p>
                   </div>
 
-                  {/* Section 9: Mileage */}
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">9. MILEAGE</h4>
-                    <p><strong>Mileage Allowance:</strong> {formData.mileageAllowance === "unlimited" ? "Unlimited" : `${formData.mileageAllowance} miles per week`}</p>
-                    {formData.mileageAllowance !== "unlimited" && (
-                      <p><strong>Excess Mileage Charge:</strong> $0.25 per mile over allowance</p>
-                    )}
-                  </div>
-
-                  {/* Section 10-15: Policies */}
-                  <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">10. FUEL POLICY</h4>
+                    <h4 className="font-semibold text-foreground mb-2">13. FUEL SERVICE CHARGE</h4>
                     <p className="text-muted-foreground">
-                      The Vehicle must be returned with the same fuel level provided at pickup. If the Vehicle is returned with less fuel, the Renter may be charged for refueling plus a reasonable service fee.
+                      Most rentals include a full tank of fuel. Renter may avoid fuel service charges by returning the vehicle with the same fuel level and presenting a fuel receipt if requested. Only the correct fuel type may be used.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">11. CLEANING AND SMOKING</h4>
-                    <p className="text-muted-foreground">
-                      Smoking and vaping are prohibited inside the Vehicle. The Renter may be charged reasonable cleaning or deodorizing fees for excessive dirt, stains, odors, pet hair, smoke residue, or trash beyond normal use.
+                    <h4 className="font-semibold text-foreground mb-2">14. SECURITY DEPOSIT</h4>
+                    <p>Renter must provide a security deposit of $50. Owner may place a hold on a credit card instead. The deposit may be used toward:</p>
+                    <ul className="list-disc pl-6 space-y-1 mt-2 text-muted-foreground">
+                      <li>Damage repairs</li>
+                      <li>Smoking violations</li>
+                      <li>Late returns</li>
+                      <li>Mechanical or physical damage</li>
+                    </ul>
+                    <p className="mt-2 text-muted-foreground">
+                      If damages exceed the deposit amount, Renter is responsible for the remaining balance. No exceptions.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">12. KEYS, TOLLS, AND FEES</h4>
+                    <h4 className="font-semibold text-foreground mb-2">15. PROPERTY IN THE CAR</h4>
                     <p className="text-muted-foreground">
-                      The Renter is responsible for lost or damaged keys/key fobs, parking tickets, traffic violations, toll charges, and towing/impound fees caused by the Renter&apos;s conduct. Reasonable administrative fees may apply where permitted by law.
+                      Turchese Solutions LLC DBA Boundless Autos is not responsible for loss, theft, or damage to personal property left in or on the vehicle or on company premises.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">13. DAMAGE, LOSS, OR ACCIDENTS</h4>
-                    <p className="text-muted-foreground">
-                      The Renter must immediately notify the Owner of any accident, theft, vandalism, mechanical issue, or damage involving the Vehicle. The Renter agrees to cooperate with insurance investigations and claims processing. The Renter shall not authorize repairs without prior written approval from the Owner except where necessary to prevent immediate safety hazards.
+                    <h4 className="font-semibold text-foreground mb-2">16. INSURANCE</h4>
+                    <p><strong>Renter&apos;s Insurance:</strong> {formData.insuranceCarrier || placeholder("Not provided at submission")} {formData.insurancePolicyNumber ? `- Policy #${formData.insurancePolicyNumber}` : ""}</p>
+                    <p className="mt-2 text-muted-foreground">
+                      Renter must provide proof of insurance covering damage to the Rental Vehicle, personal injury, passenger injuries, and property damage. Turchese Solutions LLC DBA Boundless Autos must be added to the insurance policy and notified of any policy changes. If using company insurance, Renter is responsible for a $1,000 deductible for at-fault accidents or damages. Failure to pay deductible within 7 days may result in legal action.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">14. RETURN OF VEHICLE</h4>
+                    <h4 className="font-semibold text-foreground mb-2">17. INDEMNIFICATION</h4>
                     <p className="text-muted-foreground">
-                      The Vehicle must be returned on the agreed date and time, to the approved return location, and with all keys and accessories. Failure to return the Vehicle after written or verbal demand may result in recovery actions permitted by law.
+                      Renter agrees to indemnify and hold harmless the Owner from all claims, losses, damages, and legal actions arising from Renter&apos;s use of the Rental Vehicle. This includes attorney&apos;s fees, parking tickets, moving violations, and citations.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">15. REPOSSESSION</h4>
+                    <h4 className="font-semibold text-foreground mb-2">18. COLLECTIONS</h4>
                     <p className="text-muted-foreground">
-                      The Owner may recover possession of the Vehicle if: the Vehicle is not returned as agreed; required payments are not made; the Vehicle is abandoned; the Vehicle is used unlawfully; or there is a material breach of this Agreement. The Owner shall exercise recovery rights in compliance with applicable Georgia law.
-                    </p>
-                  </div>
-
-                  {/* Section 16: Limitation of Liability */}
-                  <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">16. LIMITATION OF LIABILITY, ASSUMPTION OF RISK, AND INDEMNIFICATION</h4>
-                    <p className="text-muted-foreground mb-2">
-                      The Renter accepts full responsibility for the care, custody, and control of the Vehicle during the rental period. To the fullest extent permitted by Georgia law, the Renter assumes all risk arising from possession, operation, parking, storage, or use of the Vehicle.
-                    </p>
-                    <p className="text-muted-foreground mb-2">
-                      The Renter agrees to indemnify, defend, and hold harmless the Owner, Turchese Solutions LLC, Boundless Auto Solutions, its members, officers, employees, contractors, and agents from and against any and all claims, demands, liabilities, damages, losses, judgments, fines, penalties, costs, attorney&apos;s fees, and legal proceedings arising from operation or use of the Vehicle.
-                    </p>
-                    <p className="text-muted-foreground">
-                      The Renter authorizes the Owner to charge any payment method on file for unpaid balances, damages, fees, tolls, citations, repossession expenses, and lawful charges arising under this Agreement.
-                    </p>
-                  </div>
-
-                  {/* Section 17-20 */}
-                  <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">17. BREAKDOWNS AND MAINTENANCE</h4>
-                    <p className="text-muted-foreground">
-                      The Owner represents that the Vehicle is believed to be in reasonably safe operating condition at the start of the rental. The Renter must promptly report mechanical issues. If a breakdown occurs not caused by misuse or negligence, the Owner may provide a replacement vehicle, extend the rental period, or provide a partial credit at its discretion.
+                      If Renter fails to pay amounts due under this Agreement, a late charge of 1.5% per month may apply. Renter agrees to pay court costs, attorney&apos;s fees, collection fees, and recovery costs. Renter authorizes contact with Renter or Renter&apos;s employer regarding collection of unpaid balances.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">18. DEFAULT AND COLLECTION COSTS</h4>
+                    <h4 className="font-semibold text-foreground mb-2">19. REPRESENTATIONS AND WARRANTIES</h4>
                     <p className="text-muted-foreground">
-                      If amounts owed under this Agreement remain unpaid, the Renter agrees to pay lawful collection costs, court costs, and reasonable attorney&apos;s fees where permitted by law.
-                    </p>
-                  </div>
-
-                  <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">19. GOVERNING LAW</h4>
-                    <p className="text-muted-foreground">
-                      This Agreement shall be governed by and interpreted under the laws of the State of Georgia. Any legal action relating to this Agreement shall be brought in a court of competent jurisdiction in Georgia.
+                      Owner represents that the Rental Vehicle is in good condition and safe for operation. Renter represents that Renter is legally entitled to operate a motor vehicle and will not operate the vehicle unlawfully or negligently. Renter acknowledges inspection of the vehicle and is unaware of damage other than that listed in a separate Existing Damage document.
                     </p>
                   </div>
 
                   <div className="border-t border-border pt-4">
                     <h4 className="font-semibold text-foreground mb-2">20. ENTIRE AGREEMENT</h4>
                     <p className="text-muted-foreground">
-                      This Agreement constitutes the entire agreement between the parties and supersedes prior discussions or understandings. Any amendment must be in writing and signed by both parties. Electronic signatures shall be treated as originals to the extent permitted by law.
+                      This Car Rental Agreement constitutes the entire agreement between the Parties. No modification may be made unless in writing and signed by both Parties. There are no refunds for cancellations once a vehicle is reserved or if the vehicle breaks down during the rental period. If mechanical failure occurs due to Owner negligence, reasonable efforts will be made to extend the rental or provide a substitute vehicle. Walk-around inspections and photographs will be conducted before and after rental. Renter is responsible for any damage occurring while the vehicle is in Renter&apos;s possession.
                     </p>
                   </div>
 
-                  {/* Acknowledgment */}
                   <div className="border-t border-border pt-4">
-                    <h4 className="font-semibold text-foreground mb-2">21. ACKNOWLEDGMENT</h4>
-                    <p className="text-muted-foreground mb-4">
-                      By signing below, the parties acknowledge that they have read, understood, and agreed to the terms of this Agreement.
-                    </p>
+                    <h4 className="font-semibold text-foreground mb-2">SIGNATURES</h4>
                     <div className="grid sm:grid-cols-2 gap-6 mt-4">
                       <div>
                         <p className="font-medium text-foreground">RENTER</p>
-                        <p className="mt-2">Name: {valueOrPlaceholder(formData.fullName)}</p>
-                        <p>Signature: {placeholder("_________________________________")}</p>
+                        <p className="mt-2">Renter&apos;s Name: {valueOrPlaceholder(formData.fullName)}</p>
                         <p>Date: {formatDate(new Date().toISOString().split('T')[0])}</p>
+                        <p>Renter&apos;s Signature: {placeholder("_________________________________")}</p>
                       </div>
                       <div>
                         <p className="font-medium text-foreground">OWNER / COMPANY</p>
-                        <p className="mt-2">Drive Boundless Auto Solutions</p>
-                        <p>Signature: {placeholder("_________________________________")}</p>
+                        <p className="mt-2">Turchese Solutions LLC d/b/a Boundless Auto Solutions</p>
                         <p>Date: {placeholder("_______________")}</p>
+                        <p>Signature: {placeholder("_________________________________")}</p>
                       </div>
                     </div>
                     {additionalDrivers.length > 0 && (
