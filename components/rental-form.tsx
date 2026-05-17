@@ -12,6 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Upload, FileText, Check, Calendar, User, Car, Shield, Plus, X, Clock } from "lucide-react"
 import type { Vehicle } from "./vehicle-fleet"
 
+const submittedMessage = "our team is reviewing your application and will get back to you shortly"
+
 interface AdditionalDriver {
   name: string
   licenseNumber: string
@@ -118,16 +120,46 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
     setIsSubmitting(true)
     toast.loading("Submitting your rental request...", { id: "submit" })
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    toast.success("Application submitted successfully!", {
-      id: "submit",
-      description: "We will contact you within 24 hours to confirm your booking.",
-    })
-    
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+    try {
+      const payload = new FormData()
+      payload.append(
+        "application",
+        JSON.stringify({
+          formData,
+          selectedVehicle,
+          additionalDrivers,
+          agreementAccepted,
+        }),
+      )
+
+      if (licenseFile) {
+        payload.append("licenseFile", licenseFile)
+      }
+
+      const response = await fetch("/api/rental-applications", {
+        method: "POST",
+        body: payload,
+      })
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as { error?: string } | null
+        throw new Error(result?.error ?? "Unable to submit your rental request.")
+      }
+
+      toast.success("Application submitted successfully!", {
+        id: "submit",
+        description: submittedMessage,
+      })
+
+      setIsSubmitted(true)
+    } catch (error) {
+      toast.error("Submission failed", {
+        id: "submit",
+        description: error instanceof Error ? error.message : "Please try again.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const getStepValidationMessage = (stepNum: number): string => {
@@ -143,7 +175,6 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
         const missing2 = []
         if (!formData.licenseNumber || !formData.licenseState || !formData.licenseExpiry) missing2.push("license details")
         if (!licenseFile) missing2.push("license upload")
-        if (!formData.insuranceCarrier || !formData.insurancePolicyNumber) missing2.push("insurance info")
         return `Please complete: ${missing2.join(", ")}`
       case 3:
         const missing3 = []
@@ -184,7 +215,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
       case 1:
         return formData.fullName && formData.email && formData.phone && formData.address && formData.city && formData.state && formData.zip
       case 2:
-        return formData.licenseNumber && formData.licenseState && formData.licenseExpiry && licenseFile && formData.insuranceCarrier && formData.insurancePolicyNumber
+        return formData.licenseNumber && formData.licenseState && formData.licenseExpiry && licenseFile
       case 3:
         return formData.rentalPurpose && formData.startDate && formData.startTime && formData.endDate && formData.endTime && selectedVehicle
       case 4:
@@ -225,8 +256,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
           </div>
           <h2 className="font-serif text-4xl font-medium mb-4">Request Submitted</h2>
           <p className="text-muted-foreground text-lg mb-8">
-            Thank you for your rental request. Our team will review your application 
-            and contact you within 24 hours to confirm your booking and finalize the rental agreement.
+            {submittedMessage}
           </p>
           <Button onClick={() => {
             setIsSubmitted(false)
@@ -411,7 +441,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
             <Card>
               <CardHeader>
                 <CardTitle className="font-serif text-2xl">Driver&apos;s License & Insurance</CardTitle>
-                <CardDescription>Provide your license details, insurance information, and upload a clear photo of your license.</CardDescription>
+                <CardDescription>Provide your license details, upload a clear photo of your license, and add insurance details if available.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid sm:grid-cols-3 gap-4">
@@ -482,31 +512,29 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                 </div>
 
                 <div className="border-t border-border pt-6">
-                  <h4 className="font-medium mb-4">Insurance Information</h4>
+                  <h4 className="font-medium mb-4">Insurance Information <span className="text-muted-foreground">(optional)</span></h4>
                   <p className="text-sm text-muted-foreground mb-4">
-                    You must maintain valid automobile insurance covering liability, collision, and property damage during the rental period.
+                    Add your insurance information if you have it available. We can collect or confirm these details during follow-up.
                   </p>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="insuranceCarrier">Insurance Carrier *</Label>
+                      <Label htmlFor="insuranceCarrier">Insurance Carrier</Label>
                       <Input
                         id="insuranceCarrier"
                         name="insuranceCarrier"
                         value={formData.insuranceCarrier}
                         onChange={handleChange}
                         placeholder="State Farm, GEICO, etc."
-                        required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="insurancePolicyNumber">Policy Number *</Label>
+                      <Label htmlFor="insurancePolicyNumber">Policy Number</Label>
                       <Input
                         id="insurancePolicyNumber"
                         name="insurancePolicyNumber"
                         value={formData.insurancePolicyNumber}
                         onChange={handleChange}
                         placeholder="POL-123456789"
-                        required
                       />
                     </div>
                   </div>
@@ -755,7 +783,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                       <p><strong>Address:</strong> {formData.address ? `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}` : "_______________"}</p>
                       <p><strong>Phone:</strong> {formData.phone || "_______________"}</p>
                       <p><strong>Email:</strong> {formData.email || "_______________"}</p>
-                      <p><strong>Insurance:</strong> {formData.insuranceCarrier || "_______________"} - {formData.insurancePolicyNumber || "_______________"}</p>
+                      <p><strong>Insurance:</strong> {formData.insuranceCarrier || "Not provided at submission"} {formData.insurancePolicyNumber ? `- ${formData.insurancePolicyNumber}` : ""}</p>
                       <p className="text-xs text-muted-foreground">(&quot;Renter&quot;)</p>
                     </div>
                   </div>
@@ -842,9 +870,9 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                   {/* Section 6: Insurance */}
                   <div className="border-t border-border pt-4">
                     <h4 className="font-semibold text-foreground mb-2">6. INSURANCE</h4>
-                    <p><strong>Renter&apos;s Insurance:</strong> {formData.insuranceCarrier || "_______________"} - Policy #{formData.insurancePolicyNumber || "_______________"}</p>
+                    <p><strong>Renter&apos;s Insurance:</strong> {formData.insuranceCarrier || "Not provided at submission"} {formData.insurancePolicyNumber ? `- Policy #${formData.insurancePolicyNumber}` : ""}</p>
                     <p className="mt-2 text-muted-foreground">
-                      The Renter must maintain valid automobile insurance covering liability, collision, and property damage during the rental period. Proof of insurance must be provided before the Vehicle is released. The Renter is responsible for any deductible, excluded loss, or uninsured damage caused during the rental period.
+                      Insurance details may be collected during follow-up when they are not provided with this application. Proof of insurance may be required before the Vehicle is released. The Renter is responsible for any deductible, excluded loss, or uninsured damage caused during the rental period.
                     </p>
                   </div>
 
