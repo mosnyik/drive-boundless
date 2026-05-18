@@ -31,7 +31,9 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [additionalDrivers, setAdditionalDrivers] = useState<AdditionalDriver[]>([])
+  const [openSelect, setOpenSelect] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const todayInputValue = new Date().toLocaleDateString("en-CA")
 
   const [formData, setFormData] = useState({
     // Renter Information
@@ -64,11 +66,29 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, type, value } = e.target
+
+    if (type === "date" && value && value < todayInputValue) {
+      toast.error("Date unavailable", {
+        description: "Please select today or a future date.",
+      })
+      return
+    }
+
+    setFormData((current) => {
+      const next = { ...current, [name]: value }
+
+      if (name === "startDate" && current.endDate && value && current.endDate < value) {
+        next.endDate = ""
+      }
+
+      return next
+    })
   }
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData({ ...formData, [name]: value })
+    setOpenSelect(null)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -317,6 +337,8 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
               <div className="text-right">
                 <p className="font-serif text-2xl">${selectedVehicle.pricePerDay}</p>
                 <p className="text-xs text-muted-foreground">per day</p>
+                <p className="font-serif text-xl mt-2">${selectedVehicle.pricePerWeek}</p>
+                <p className="text-xs text-muted-foreground">per week</p>
               </div>
             </CardContent>
           </Card>
@@ -482,6 +504,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                       id="licenseExpiry"
                       name="licenseExpiry"
                       type="date"
+                      min={todayInputValue}
                       value={formData.licenseExpiry}
                       onChange={handleChange}
                       required
@@ -627,6 +650,8 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                 <div>
                   <Label htmlFor="rentalPurpose">Rental Purpose *</Label>
                   <Select 
+                    open={openSelect === "rentalPurpose"}
+                    onOpenChange={(open) => setOpenSelect(open ? "rentalPurpose" : null)}
                     value={formData.rentalPurpose} 
                     onValueChange={(value) => handleSelectChange("rentalPurpose", value)}
                   >
@@ -653,6 +678,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                       id="startDate"
                       name="startDate"
                       type="date"
+                      min={todayInputValue}
                       value={formData.startDate}
                       onChange={handleChange}
                       required
@@ -681,6 +707,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                       id="endDate"
                       name="endDate"
                       type="date"
+                      min={formData.startDate || todayInputValue}
                       value={formData.endDate}
                       onChange={handleChange}
                       required
@@ -706,6 +733,8 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                   <div>
                     <Label htmlFor="paymentDueDay">Weekly Payment Due Day</Label>
                     <Select 
+                      open={openSelect === "paymentDueDay"}
+                      onOpenChange={(open) => setOpenSelect(open ? "paymentDueDay" : null)}
                       value={formData.paymentDueDay} 
                       onValueChange={(value) => handleSelectChange("paymentDueDay", value)}
                     >
@@ -726,6 +755,8 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                   <div>
                     <Label htmlFor="mileageAllowance">Mileage Preference</Label>
                     <Select 
+                      open={openSelect === "mileageAllowance"}
+                      onOpenChange={(open) => setOpenSelect(open ? "mileageAllowance" : null)}
                       value={formData.mileageAllowance} 
                       onValueChange={(value) => handleSelectChange("mileageAllowance", value)}
                     >
@@ -782,7 +813,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     <div className="space-y-2">
                       <h4 className="font-semibold text-foreground">Rental Company:</h4>
                       <p>Turchese Solutions LLC d/b/a Boundless Auto Solutions</p>
-                      <p>Address: To be provided at pickup</p>
+                      <p>Address: To be communicated via text or email</p>
                       <p>Phone: +1 929-213-5106</p>
                       <p>info@turcheseconsulting.com</p>
                       <p className="text-xs text-muted-foreground">(&quot;Owner&quot; or &quot;Company&quot;)</p>
@@ -832,7 +863,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     <h4 className="font-semibold text-foreground mb-2">2. RENTAL FEES</h4>
                     {selectedVehicle && (
                       <ul className="list-disc pl-6 space-y-1 mb-2">
-                        <li><strong>Base Fee:</strong> ${(selectedVehicle.pricePerDay * 7 * 0.9).toFixed(0)} per week</li>
+                        <li><strong>Base Fee:</strong> ${selectedVehicle.pricePerWeek} per week</li>
                         <li><strong>Rental Fee for Days Beyond Rental Term:</strong> ${selectedVehicle.pricePerDay} per day</li>
                         <li><strong>Security Deposit:</strong> $50</li>
                         <li><strong>Delivery Fee:</strong> ${selectedVehicle.deliveryFee}</li>

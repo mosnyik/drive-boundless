@@ -49,6 +49,14 @@ export const vehicle = defineType({
       validation: (rule) => rule.required().min(0),
     }),
     defineField({
+      name: 'pricePerWeek',
+      title: 'Price per week',
+      type: 'number',
+      description:
+        'Weekly rental price in US dollars. Enter numbers only, for example 500 for $500 per week. If left blank, the website falls back to the calculated weekly rate.',
+      validation: (rule) => rule.min(0),
+    }),
+    defineField({
       name: 'minRentalDays',
       title: 'Minimum rental days',
       type: 'number',

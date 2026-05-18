@@ -98,6 +98,7 @@ export const rentalApplication = defineType({
         defineField({name: 'label', title: 'Vehicle label', type: 'string'}),
         defineField({name: 'color', title: 'Color', type: 'string'}),
         defineField({name: 'pricePerDay', title: 'Price per day', type: 'number'}),
+        defineField({name: 'pricePerWeek', title: 'Price per week', type: 'number'}),
       ],
     }),
     defineField({

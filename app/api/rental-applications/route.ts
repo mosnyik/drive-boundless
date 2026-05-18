@@ -38,6 +38,7 @@ interface RentalApplicationPayload {
     year: number
     color: string
     pricePerDay: number
+    pricePerWeek: number
   } | null
   additionalDrivers: Array<{
     name: string
@@ -226,6 +227,7 @@ export async function POST(request: Request) {
           label: `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}`,
           color: selectedVehicle.color,
           pricePerDay: selectedVehicle.pricePerDay,
+          pricePerWeek: selectedVehicle.pricePerWeek,
         }
       : undefined,
     additionalDrivers: additionalDrivers

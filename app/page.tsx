@@ -40,6 +40,20 @@ export default async function Home() {
             name: `${vehicle.year} ${vehicle.make} ${vehicle.model} rental`,
             price: vehicle.pricePerDay,
             priceCurrency: "USD",
+            priceSpecification: [
+              {
+                "@type": "UnitPriceSpecification",
+                price: vehicle.pricePerDay,
+                priceCurrency: "USD",
+                unitText: "DAY",
+              },
+              {
+                "@type": "UnitPriceSpecification",
+                price: vehicle.pricePerWeek,
+                priceCurrency: "USD",
+                unitText: "WEEK",
+              },
+            ],
             availability: vehicle.available
               ? "https://schema.org/InStock"
               : "https://schema.org/OutOfStock",
