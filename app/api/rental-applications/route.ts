@@ -27,6 +27,7 @@ interface RentalApplicationPayload {
     startTime: string
     endDate: string
     endTime: string
+    rentalRate: "day" | "week"
     paymentDueDay: string
     mileageAllowance: string
     additionalNotes?: string
@@ -52,6 +53,42 @@ function required(value: unknown) {
   return typeof value === "string" ? value.trim().length > 0 : Boolean(value)
 }
 
+function toInputDate(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+function toInputTime(date: Date) {
+  const hours = String(date.getHours()).padStart(2, "0")
+  const minutes = String(date.getMinutes()).padStart(2, "0")
+  return `${hours}:${minutes}`
+}
+
+function validateRentalTimes(formData: RentalApplicationPayload["formData"]) {
+  const now = new Date()
+  const today = toInputDate(now)
+  const currentTime = toInputTime(now)
+
+  if (formData.startDate < today || formData.endDate < today) {
+    return "Rental dates must be today or later."
+  }
+
+  if (
+    (formData.startDate === today && formData.startTime < currentTime) ||
+    (formData.endDate === today && formData.endTime < currentTime)
+  ) {
+    return "Rental times must be from now onward."
+  }
+
+  if (`${formData.endDate}T${formData.endTime}` < `${formData.startDate}T${formData.startTime}`) {
+    return "Return date and time must be after the pick-up date and time."
+  }
+
+  return null
+}
+
 function validatePayload(payload: RentalApplicationPayload) {
   const { formData, selectedVehicle, agreementAccepted } = payload
   const missing = []
@@ -71,6 +108,7 @@ function validatePayload(payload: RentalApplicationPayload) {
   if (!required(formData.startTime)) missing.push("startTime")
   if (!required(formData.endDate)) missing.push("endDate")
   if (!required(formData.endTime)) missing.push("endTime")
+  if (formData.rentalRate !== "day" && formData.rentalRate !== "week") missing.push("rentalRate")
   if (!selectedVehicle) missing.push("selectedVehicle")
   if (!agreementAccepted) missing.push("agreementAccepted")
 
@@ -155,6 +193,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing required fields.", missing }, { status: 400 })
   }
 
+  const timeError = validateRentalTimes(application.formData)
+
+  if (timeError) {
+    return NextResponse.json({ error: timeError }, { status: 400 })
+  }
+
   const licenseFile = body.get("licenseFile")
   let licenseAssetId: string | undefined
 
@@ -214,6 +258,7 @@ export async function POST(request: Request) {
       startTime: formData.startTime,
       endDate: formData.endDate,
       endTime: formData.endTime,
+      rentalRate: formData.rentalRate,
       paymentDueDay: formData.paymentDueDay,
       mileageAllowance: formData.mileageAllowance,
       additionalNotes: formData.additionalNotes || undefined,
@@ -228,6 +273,9 @@ export async function POST(request: Request) {
           color: selectedVehicle.color,
           pricePerDay: selectedVehicle.pricePerDay,
           pricePerWeek: selectedVehicle.pricePerWeek,
+          selectedRate: formData.rentalRate,
+          selectedRatePrice:
+            formData.rentalRate === "day" ? selectedVehicle.pricePerDay : selectedVehicle.pricePerWeek,
         }
       : undefined,
     additionalDrivers: additionalDrivers

@@ -9,10 +9,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Upload, FileText, Check, Calendar, User, Car, Shield, Plus, X, Clock } from "lucide-react"
 import type { Vehicle } from "./vehicle-fleet"
 
 const submittedMessage = "our team is reviewing your application and will get back to you shortly"
+type RentalRate = "day" | "week"
+
+const getTodayInputValue = () => new Date().toLocaleDateString("en-CA")
+const getNowInputValue = () => new Date().toTimeString().slice(0, 5)
 
 interface AdditionalDriver {
   name: string
@@ -33,8 +38,22 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   const [additionalDrivers, setAdditionalDrivers] = useState<AdditionalDriver[]>([])
   const [openSelect, setOpenSelect] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const todayInputValue = new Date().toLocaleDateString("en-CA")
+  const todayInputValue = getTodayInputValue()
+  const nowInputValue = getNowInputValue()
 
+  const isToday = (date: string) => date === getTodayInputValue()
+  const isBeforeNow = (date: string, time: string) => {
+    return Boolean(date && time && isToday(date) && time < getNowInputValue())
+  }
+  const isEndBeforeStart = (startDate: string, startTime: string, endDate: string, endTime: string) => {
+    return Boolean(
+      startDate &&
+        startTime &&
+        endDate &&
+        endTime &&
+        `${endDate}T${endTime}` < `${startDate}T${startTime}`,
+    )
+  }
   const [formData, setFormData] = useState({
     // Renter Information
     fullName: "",
@@ -57,6 +76,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
     startTime: "",
     endDate: "",
     endTime: "",
+    rentalRate: "" as RentalRate | "",
     // Payment Terms
     paymentDueDay: "Monday",
     // Mileage
@@ -64,6 +84,13 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
     // Additional Notes
     additionalNotes: "",
   })
+
+  const minEndTime =
+    formData.endDate && formData.endDate === formData.startDate
+      ? [isToday(formData.endDate) ? nowInputValue : "", formData.startTime].filter(Boolean).sort().at(-1)
+      : isToday(formData.endDate)
+        ? nowInputValue
+        : undefined
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, type, value } = e.target
@@ -75,11 +102,46 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
       return
     }
 
+    if (type === "time") {
+      const dateValue = name === "startTime" ? formData.startDate : formData.endDate
+
+      if (isBeforeNow(dateValue, value)) {
+        toast.error("Time unavailable", {
+          description: "Please select a time from now onward.",
+        })
+        return
+      }
+    }
+
     setFormData((current) => {
       const next = { ...current, [name]: value }
 
       if (name === "startDate" && current.endDate && value && current.endDate < value) {
         next.endDate = ""
+        next.endTime = ""
+      }
+
+      if (name === "startDate" && isBeforeNow(value, current.startTime)) {
+        next.startTime = ""
+      }
+
+      if (name === "endDate" && isBeforeNow(value, current.endTime)) {
+        next.endTime = ""
+      }
+
+      if (
+        (name === "startDate" || name === "startTime" || name === "endDate" || name === "endTime") &&
+        isEndBeforeStart(next.startDate, next.startTime, next.endDate, next.endTime)
+      ) {
+        if (name === "startDate" || name === "startTime") {
+          next.endDate = ""
+          next.endTime = ""
+        } else {
+          toast.error("Return time unavailable", {
+            description: "Please select a return time after the pick-up time.",
+          })
+          return current
+        }
       }
 
       return next
@@ -89,6 +151,11 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   const handleSelectChange = (name: string, value: string) => {
     setFormData({ ...formData, [name]: value })
     setOpenSelect(null)
+  }
+
+  const handleRateChange = (value: string) => {
+    if (value !== "day" && value !== "week") return
+    setFormData({ ...formData, rentalRate: value })
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,6 +196,17 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (
+      isBeforeNow(formData.startDate, formData.startTime) ||
+      isBeforeNow(formData.endDate, formData.endTime) ||
+      isEndBeforeStart(formData.startDate, formData.startTime, formData.endDate, formData.endTime)
+    ) {
+      toast.error("Time unavailable", {
+        description: "Please select rental times from now onward.",
+      })
+      return
+    }
     
     if (!agreementAccepted) {
       toast.error("Agreement required", {
@@ -201,6 +279,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
         if (!formData.startDate || !formData.startTime || !formData.endDate || !formData.endTime) missing3.push("rental dates/times")
         if (!formData.rentalPurpose) missing3.push("rental purpose")
         if (!selectedVehicle) missing3.push("vehicle selection")
+        if (!formData.rentalRate) missing3.push("price selection")
         return `Please complete: ${missing3.join(", ")}`
       case 4:
         return "Please read and accept the rental agreement"
@@ -237,7 +316,18 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
       case 2:
         return formData.licenseNumber && formData.licenseState && formData.licenseExpiry && licenseFile
       case 3:
-        return formData.rentalPurpose && formData.startDate && formData.startTime && formData.endDate && formData.endTime && selectedVehicle
+        return (
+          formData.rentalPurpose &&
+          formData.startDate &&
+          formData.startTime &&
+          formData.endDate &&
+          formData.endTime &&
+          formData.rentalRate &&
+          !isBeforeNow(formData.startDate, formData.startTime) &&
+          !isBeforeNow(formData.endDate, formData.endTime) &&
+          !isEndBeforeStart(formData.startDate, formData.startTime, formData.endDate, formData.endTime) &&
+          selectedVehicle
+        )
       case 4:
         return agreementAccepted
       default:
@@ -259,6 +349,14 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   const valueOrPlaceholder = (value: string, fallback = "_______________") => {
     return value || placeholder(fallback)
   }
+  const selectedRateLabel =
+    formData.rentalRate === "day" ? "Daily" : formData.rentalRate === "week" ? "Weekly" : ""
+  const selectedRatePrice =
+    selectedVehicle && formData.rentalRate === "day"
+      ? selectedVehicle.pricePerDay
+      : selectedVehicle && formData.rentalRate === "week"
+        ? selectedVehicle.pricePerWeek
+        : undefined
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return placeholder("_______________")
@@ -293,7 +391,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
               fullName: "", address: "", city: "", state: "", zip: "",
               phone: "", email: "", licenseNumber: "", licenseState: "",
               licenseExpiry: "", insuranceCarrier: "", insurancePolicyNumber: "",
-              rentalPurpose: "", startDate: "", startTime: "", endDate: "", endTime: "",
+              rentalPurpose: "", startDate: "", startTime: "", endDate: "", endTime: "", rentalRate: "",
               paymentDueDay: "Monday", mileageAllowance: "unlimited", additionalNotes: "",
             })
             setLicenseFile(null)
@@ -668,6 +766,46 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                   </Select>
                 </div>
 
+                <div>
+                  <Label>Price Option *</Label>
+                  {selectedVehicle ? (
+                    <RadioGroup
+                      value={formData.rentalRate}
+                      onValueChange={handleRateChange}
+                      className="grid sm:grid-cols-2 gap-3 mt-2"
+                    >
+                      <Label
+                        htmlFor="rentalRateDay"
+                        className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors ${
+                          formData.rentalRate === "day" ? "border-accent bg-accent/10" : "border-border"
+                        }`}
+                      >
+                        <div>
+                          <p className="font-serif text-2xl">${selectedVehicle.pricePerDay}</p>
+                          <p className="text-xs text-muted-foreground">per day</p>
+                        </div>
+                        <RadioGroupItem id="rentalRateDay" value="day" />
+                      </Label>
+                      <Label
+                        htmlFor="rentalRateWeek"
+                        className={`flex cursor-pointer items-center justify-between rounded-lg border p-4 transition-colors ${
+                          formData.rentalRate === "week" ? "border-accent bg-accent/10" : "border-border"
+                        }`}
+                      >
+                        <div>
+                          <p className="font-serif text-2xl">${selectedVehicle.pricePerWeek}</p>
+                          <p className="text-xs text-muted-foreground">per week</p>
+                        </div>
+                        <RadioGroupItem id="rentalRateWeek" value="week" />
+                      </Label>
+                    </RadioGroup>
+                  ) : (
+                    <div className="mt-2 rounded-lg border border-dashed border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+                      Select a vehicle to choose a daily or weekly price.
+                    </div>
+                  )}
+                </div>
+
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="startDate" className="flex items-center gap-2">
@@ -693,6 +831,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                       id="startTime"
                       name="startTime"
                       type="time"
+                      min={isToday(formData.startDate) ? nowInputValue : undefined}
                       value={formData.startTime}
                       onChange={handleChange}
                       required
@@ -722,6 +861,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                       id="endTime"
                       name="endTime"
                       type="time"
+                      min={minEndTime}
                       value={formData.endTime}
                       onChange={handleChange}
                       required
@@ -863,6 +1003,12 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     <h4 className="font-semibold text-foreground mb-2">2. RENTAL FEES</h4>
                     {selectedVehicle && (
                       <ul className="list-disc pl-6 space-y-1 mb-2">
+                        <li>
+                          <strong>Selected Price Option:</strong>{" "}
+                          {selectedRateLabel && selectedRatePrice
+                            ? `${selectedRateLabel} - $${selectedRatePrice} per ${formData.rentalRate}`
+                            : "To be selected"}
+                        </li>
                         <li><strong>Base Fee:</strong> ${selectedVehicle.pricePerWeek} per week</li>
                         <li><strong>Rental Fee for Days Beyond Rental Term:</strong> ${selectedVehicle.pricePerDay} per day</li>
                         <li><strong>Security Deposit:</strong> $50</li>

@@ -79,6 +79,17 @@ export const rentalApplication = defineType({
         defineField({name: 'startTime', title: 'Start time', type: 'string'}),
         defineField({name: 'endDate', title: 'End date', type: 'date'}),
         defineField({name: 'endTime', title: 'End time', type: 'string'}),
+        defineField({
+          name: 'rentalRate',
+          title: 'Selected price option',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Daily', value: 'day'},
+              {title: 'Weekly', value: 'week'},
+            ],
+          },
+        }),
         defineField({name: 'paymentDueDay', title: 'Payment due day', type: 'string'}),
         defineField({name: 'mileageAllowance', title: 'Mileage allowance', type: 'string'}),
         defineField({name: 'additionalNotes', title: 'Additional notes', type: 'text'}),
@@ -99,6 +110,18 @@ export const rentalApplication = defineType({
         defineField({name: 'color', title: 'Color', type: 'string'}),
         defineField({name: 'pricePerDay', title: 'Price per day', type: 'number'}),
         defineField({name: 'pricePerWeek', title: 'Price per week', type: 'number'}),
+        defineField({
+          name: 'selectedRate',
+          title: 'Selected price option',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Daily', value: 'day'},
+              {title: 'Weekly', value: 'week'},
+            ],
+          },
+        }),
+        defineField({name: 'selectedRatePrice', title: 'Selected rate price', type: 'number'}),
       ],
     }),
     defineField({
