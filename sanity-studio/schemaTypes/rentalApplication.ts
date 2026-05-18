@@ -79,6 +79,7 @@ export const rentalApplication = defineType({
         defineField({name: 'startTime', title: 'Start time', type: 'string'}),
         defineField({name: 'endDate', title: 'End date', type: 'date'}),
         defineField({name: 'endTime', title: 'End time', type: 'string'}),
+        defineField({name: 'visitorTimeZone', title: 'Visitor time zone', type: 'string'}),
         defineField({
           name: 'rentalRate',
           title: 'Selected price option',

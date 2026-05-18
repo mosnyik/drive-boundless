@@ -46,6 +46,7 @@ interface RentalApplicationPayload {
     licenseNumber: string
     licenseState: string
   }>
+  visitorTimeZone: string
   agreementAccepted: boolean
 }
 
@@ -53,31 +54,49 @@ function required(value: unknown) {
   return typeof value === "string" ? value.trim().length > 0 : Boolean(value)
 }
 
-function toInputDate(date: Date) {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  return `${year}-${month}-${day}`
+function isValidTimeZone(value: unknown): value is string {
+  if (typeof value !== "string" || !value.trim()) return false
+
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value })
+    return true
+  } catch {
+    return false
+  }
 }
 
-function toInputTime(date: Date) {
-  const hours = String(date.getHours()).padStart(2, "0")
-  const minutes = String(date.getMinutes()).padStart(2, "0")
-  return `${hours}:${minutes}`
+function getInputDateTimeInTimeZone(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    hourCycle: "h23",
+  }).formatToParts(date)
+
+  const valueFor = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? ""
+
+  return {
+    date: `${valueFor("year")}-${valueFor("month")}-${valueFor("day")}`,
+    time: `${valueFor("hour")}:${valueFor("minute")}`,
+  }
 }
 
-function validateRentalTimes(formData: RentalApplicationPayload["formData"]) {
+function validateRentalTimes(formData: RentalApplicationPayload["formData"], visitorTimeZone: string) {
   const now = new Date()
-  const today = toInputDate(now)
-  const currentTime = toInputTime(now)
+  const current = getInputDateTimeInTimeZone(now, visitorTimeZone)
 
-  if (formData.startDate < today || formData.endDate < today) {
+  if (formData.startDate < current.date || formData.endDate < current.date) {
     return "Rental dates must be today or later."
   }
 
   if (
-    (formData.startDate === today && formData.startTime < currentTime) ||
-    (formData.endDate === today && formData.endTime < currentTime)
+    (formData.startDate === current.date && formData.startTime < current.time) ||
+    (formData.endDate === current.date && formData.endTime < current.time)
   ) {
     return "Rental times must be from now onward."
   }
@@ -90,7 +109,7 @@ function validateRentalTimes(formData: RentalApplicationPayload["formData"]) {
 }
 
 function validatePayload(payload: RentalApplicationPayload) {
-  const { formData, selectedVehicle, agreementAccepted } = payload
+  const { formData, selectedVehicle, visitorTimeZone, agreementAccepted } = payload
   const missing = []
 
   if (!required(formData.fullName)) missing.push("fullName")
@@ -110,6 +129,7 @@ function validatePayload(payload: RentalApplicationPayload) {
   if (!required(formData.endTime)) missing.push("endTime")
   if (formData.rentalRate !== "day" && formData.rentalRate !== "week") missing.push("rentalRate")
   if (!selectedVehicle) missing.push("selectedVehicle")
+  if (!isValidTimeZone(visitorTimeZone)) missing.push("visitorTimeZone")
   if (!agreementAccepted) missing.push("agreementAccepted")
 
   return missing
@@ -193,7 +213,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing required fields.", missing }, { status: 400 })
   }
 
-  const timeError = validateRentalTimes(application.formData)
+  const timeError = validateRentalTimes(application.formData, application.visitorTimeZone)
 
   if (timeError) {
     return NextResponse.json({ error: timeError }, { status: 400 })
@@ -217,7 +237,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const { formData, selectedVehicle, additionalDrivers, agreementAccepted } = application
+  const { formData, selectedVehicle, visitorTimeZone, additionalDrivers, agreementAccepted } = application
   const now = new Date().toISOString()
   const document = {
     _type: "rentalApplication",
@@ -258,6 +278,7 @@ export async function POST(request: Request) {
       startTime: formData.startTime,
       endDate: formData.endDate,
       endTime: formData.endTime,
+      visitorTimeZone,
       rentalRate: formData.rentalRate,
       paymentDueDay: formData.paymentDueDay,
       mileageAllowance: formData.mileageAllowance,

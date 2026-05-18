@@ -16,6 +16,7 @@ import type { Vehicle } from "./vehicle-fleet"
 const submittedMessage = "our team is reviewing your application and will get back to you shortly"
 type RentalRate = "day" | "week"
 
+const getVisitorTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
 const getTodayInputValue = () => new Date().toLocaleDateString("en-CA")
 const getNowInputValue = () => new Date().toTimeString().slice(0, 5)
 
@@ -224,6 +225,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
         "application",
         JSON.stringify({
           formData,
+          visitorTimeZone: getVisitorTimeZone(),
           selectedVehicle,
           additionalDrivers,
           agreementAccepted,
