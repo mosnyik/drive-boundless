@@ -1,9 +1,17 @@
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 
 export function Hero() {
+  const perks = [
+    "Flat weekly rate",
+    "Unlimited miles",
+    "Maintenance included",
+    "Insurance included",
+    "No contracts",
+  ]
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -30,10 +38,21 @@ export function Hero() {
           <span className="italic">For Your Car.</span>
         </h1>
 
-        <p className="max-w-2xl mx-auto text-lg text-primary-foreground/70 mb-4 text-pretty">
-          We give you a dependable work car for one flat weekly rate.
-          Unlimited miles, maintenance and insurance included. No contracts.
+        <p className="max-w-2xl mx-auto text-lg text-primary-foreground/70 mb-6 text-pretty">
+          We give you a dependable work car with the essentials already covered.
         </p>
+
+        <ul className="max-w-3xl mx-auto mb-6 grid gap-3 text-left sm:grid-cols-2 lg:grid-cols-5">
+          {perks.map((perk) => (
+            <li
+              key={perk}
+              className="flex items-center gap-2 text-sm font-medium text-primary-foreground/80"
+            >
+              <Check className="h-4 w-4 shrink-0 text-accent" />
+              <span>{perk}</span>
+            </li>
+          ))}
+        </ul>
 
         <p className="max-w-xl mx-auto text-base text-primary-foreground/60 mb-12 text-pretty">
           Local fleet. Real support. Same-day pickup available.

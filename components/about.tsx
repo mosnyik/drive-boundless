@@ -1,6 +1,13 @@
-import { Car, Clock, Shield, Users } from "lucide-react"
+import { Car, Check, Clock, Shield, Users } from "lucide-react"
 
 export function About() {
+  const perks = [
+    "Flat weekly or monthly rate",
+    "Unlimited miles",
+    "Maintenance handled by us",
+    "Fast help if something breaks",
+  ]
+
   const stats = [
     {
       icon: Car,
@@ -43,14 +50,18 @@ export function About() {
           </h2>
           <div className="space-y-6 text-muted-foreground leading-relaxed text-lg">
             <p>
-              Your car&apos;s in the shop. Rentals cost too much. Borrowing a friend&apos;s car
-              isn&apos;t working. We built Drive Boundless for people who can&apos;t afford to be
+              Your car&apos;s in the shop? Rentals cost too much. Borrowing a friend&apos;s car
+              isn&apos;t working? We built Drive Boundless for people who can&apos;t afford to be
               without a car.
             </p>
-            <p>
-              Flat weekly or monthly rate. Unlimited miles. We handle maintenance. If something
-              breaks, text us and we&apos;ll get you back on the road.
-            </p>
+            <ul className="grid gap-3 sm:grid-cols-2">
+              {perks.map((perk) => (
+                <li key={perk} className="flex items-start gap-3 text-foreground">
+                  <Check className="mt-1 h-5 w-5 shrink-0 text-accent" />
+                  <span>{perk}</span>
+                </li>
+              ))}
+            </ul>
             <p>
               We&apos;re local to Gwinnett County. We keep it simple. We keep you moving. No
               credit games. No corporate runaround. Just the car you need to handle your business.
