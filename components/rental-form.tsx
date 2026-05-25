@@ -953,7 +953,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
               <CardContent className="space-y-6">
                 <div className="bg-muted rounded-lg p-6 max-h-[500px] overflow-y-auto text-sm space-y-6">
                   <div className="text-center border-b border-border pb-4">
-                    <h3 className="font-bold text-lg text-foreground">BOUNDLESS AUTO SOLUTIONS</h3>
+                    <h3 className="font-bold text-lg text-foreground">DRIVE BOUNDLESS AUTO SOLUTIONS</h3>
                     <h3 className="font-bold text-lg text-foreground">GEORGIA MOTOR VEHICLE RENTAL AGREEMENT</h3>
                     <div className="text-muted-foreground mt-2 space-y-1">
                       <p>Operated by Turchese Solutions LLC</p>
