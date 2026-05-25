@@ -146,6 +146,36 @@ export const rentalApplication = defineType({
       type: 'boolean',
       readOnly: true,
     }),
+    defineField({
+      name: 'agreement',
+      title: 'Signed agreement',
+      type: 'object',
+      readOnly: true,
+      fields: [
+        defineField({name: 'accepted', title: 'Accepted', type: 'boolean'}),
+        defineField({name: 'acceptedAt', title: 'Accepted at', type: 'datetime'}),
+        defineField({name: 'renterSignature', title: 'Renter signature', type: 'string'}),
+        defineField({name: 'ownerSignature', title: 'Owner signature', type: 'string'}),
+        defineField({name: 'ownerSignedDate', title: 'Owner signed date', type: 'string'}),
+        defineField({
+          name: 'pdf',
+          title: 'Downloadable agreement PDF',
+          type: 'file',
+        }),
+        defineField({
+          name: 'renderedHtml',
+          title: 'Rendered agreement HTML',
+          type: 'text',
+          rows: 12,
+        }),
+        defineField({
+          name: 'plainText',
+          title: 'Agreement plain text',
+          type: 'text',
+          rows: 12,
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {

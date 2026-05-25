@@ -34,6 +34,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   const [step, setStep] = useState(1)
   const [licenseFile, setLicenseFile] = useState<File | null>(null)
   const [agreementAccepted, setAgreementAccepted] = useState(false)
+  const [agreementAcceptedAt, setAgreementAcceptedAt] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [additionalDrivers, setAdditionalDrivers] = useState<AdditionalDriver[]>([])
@@ -229,6 +230,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
           selectedVehicle,
           additionalDrivers,
           agreementAccepted,
+          agreementAcceptedAt: agreementAcceptedAt ?? new Date().toISOString(),
         }),
       )
 
@@ -375,6 +377,16 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
     return timeStr ? `${date} at ${timeStr}` : date
   }
 
+  const formatAgreementDate = (dateStr: string | null) => {
+    if (!dateStr) return placeholder("_______________")
+
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+  }
+
   if (isSubmitted) {
     return (
       <section id="rent" className="py-24 lg:py-32 bg-background">
@@ -398,6 +410,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
             })
             setLicenseFile(null)
             setAgreementAccepted(false)
+            setAgreementAcceptedAt(null)
             setAdditionalDrivers([])
           }}>
             Submit Another Request
@@ -1220,15 +1233,39 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     <div className="grid sm:grid-cols-2 gap-6 mt-4">
                       <div>
                         <p className="font-medium text-foreground">RENTER</p>
-                        <p className="mt-2">Renter&apos;s Name: {valueOrPlaceholder(formData.fullName)}</p>
-                        <p>Date: {formatDate(new Date().toISOString().split('T')[0])}</p>
-                        <p>Renter&apos;s Signature: {placeholder("_________________________________")}</p>
+                        <p className="mt-2">
+                          Renter&apos;s Signature:{" "}
+                          {agreementAccepted ? (
+                            <span className="inline-block min-w-56 border-b border-foreground px-2 pb-0.5">
+                              {valueOrPlaceholder(formData.fullName)}
+                            </span>
+                          ) : (
+                            placeholder("_________________________________")
+                          )}
+                        </p>
                       </div>
                       <div>
                         <p className="font-medium text-foreground">OWNER / COMPANY</p>
-                        <p className="mt-2">Turchese Solutions LLC d/b/a Boundless Auto Solutions</p>
-                        <p>Date: {placeholder("_______________")}</p>
-                        <p>Signature: {placeholder("_________________________________")}</p>
+                        <p className="mt-2">
+                          Date:{" "}
+                          {agreementAccepted ? (
+                            <span className="inline-block min-w-40 border-b border-foreground px-2 pb-0.5">
+                              {formatAgreementDate(agreementAcceptedAt)}
+                            </span>
+                          ) : (
+                            placeholder("_______________")
+                          )}
+                        </p>
+                        <p>
+                          Signature:{" "}
+                          {agreementAccepted ? (
+                            <span className="inline-block min-w-56 border-b border-foreground px-2 pb-0.5">
+                              Turchese Solutions LLC
+                            </span>
+                          ) : (
+                            placeholder("_________________________________")
+                          )}
+                        </p>
                       </div>
                     </div>
                     {additionalDrivers.length > 0 && (
@@ -1251,7 +1288,9 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
                     id="agreement" 
                     checked={agreementAccepted}
                     onCheckedChange={(checked) => {
-                      setAgreementAccepted(checked as boolean)
+                      const isChecked = checked === true
+                      setAgreementAccepted(isChecked)
+                      setAgreementAcceptedAt(isChecked ? new Date().toISOString() : null)
                       if (checked) {
                         toast.success("Agreement accepted", {
                           description: "You can now submit your rental request.",
