@@ -57,10 +57,10 @@ export function Footer() {
             © {new Date().getFullYear()} Drive Boundless Auto Solutions. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm text-primary-foreground/50">
-            <Link href="#" className="hover:text-primary-foreground transition-colors">
+            <Link href="/privacy" className="hover:text-primary-foreground transition-colors">
               Privacy Policy
             </Link>
-            <Link href="#" className="hover:text-primary-foreground transition-colors">
+            <Link href="/terms" className="hover:text-primary-foreground transition-colors">
               Terms of Service
             </Link>
           </div>

@@ -116,7 +116,7 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
 
                 <CardContent>
                   {/* Vehicle Image */}
-                  <div className="aspect-[16/10] bg-muted rounded-lg mb-4 overflow-hidden relative">
+                  <div className="aspect-16/10 bg-muted rounded-lg mb-4 overflow-hidden relative">
                     {vehicle.image ? (
                       <Image
                         src={vehicle.image}
