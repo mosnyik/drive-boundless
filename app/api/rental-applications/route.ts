@@ -129,7 +129,7 @@ function validatePayload(payload: RentalApplicationPayload) {
   if (!required(formData.startTime)) missing.push("startTime")
   if (!required(formData.endDate)) missing.push("endDate")
   if (!required(formData.endTime)) missing.push("endTime")
-  if (formData.rentalRate !== "day" && formData.rentalRate !== "week") missing.push("rentalRate")
+  if (formData.rentalRate !== "week") missing.push("rentalRate")
   if (!selectedVehicle) missing.push("selectedVehicle")
   if (!isValidTimeZone(visitorTimeZone)) missing.push("visitorTimeZone")
   if (!agreementAccepted) missing.push("agreementAccepted")
@@ -425,9 +425,8 @@ export async function POST(request: Request) {
           color: selectedVehicle.color,
           pricePerDay: selectedVehicle.pricePerDay,
           pricePerWeek: selectedVehicle.pricePerWeek,
-          selectedRate: formData.rentalRate,
-          selectedRatePrice:
-            formData.rentalRate === "day" ? selectedVehicle.pricePerDay : selectedVehicle.pricePerWeek,
+          selectedRate: "week",
+          selectedRatePrice: selectedVehicle.pricePerWeek,
         }
       : undefined,
     additionalDrivers: additionalDrivers

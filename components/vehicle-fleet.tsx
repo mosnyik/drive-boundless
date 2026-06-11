@@ -55,7 +55,7 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
     setSelectedId(vehicle.id);
     onSelectVehicle?.(vehicle);
     toast.success("Vehicle selected", {
-      description: `${vehicle.year} ${vehicle.make} ${vehicle.model} - $${vehicle.pricePerDay}/day or $${vehicle.pricePerWeek}/week`,
+      description: `${vehicle.year} ${vehicle.make} ${vehicle.model} - $${vehicle.pricePerWeek}/week`,
     });
   };
 
@@ -194,24 +194,11 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
                     </div>
                     </div> */}
                     {/* <div className="flex items-end justify-between mt-6 pt-4 border-t border-border"> */}
-                    <div className="flex items-end gap-3">
-                      <div className="flex flex-col">
-                        <p className="font-serif text-2xl font-medium">
-                          ${vehicle.pricePerDay}
-                        </p>
-                        <p className="text-xs text-muted-foreground">per day</p>
-                      </div>
-
-                      <div className="pb-1 text-muted-foreground">/</div>
-
-                      <div className="flex flex-col">
-                        <p className="font-serif text-xl font-medium">
-                          ${vehicle.pricePerWeek}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          per week
-                        </p>
-                      </div>
+                    <div className="flex flex-col">
+                      <p className="font-serif text-2xl font-medium">
+                        ${vehicle.pricePerWeek}
+                      </p>
+                      <p className="text-xs text-muted-foreground">per week</p>
                     </div>
 
                     <Button

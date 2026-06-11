@@ -1,4 +1,4 @@
-type RentalRate = "day" | "week"
+type RentalRate = "week"
 
 export interface RentalAgreementFormData {
   fullName: string
@@ -128,12 +128,7 @@ export function buildRentalAgreementSnapshot({
   const insurance = `${formData.insuranceCarrier || "Not provided at submission"}${
     formData.insurancePolicyNumber ? ` - ${formData.insurancePolicyNumber}` : ""
   }`
-  const selectedRateLabel = formData.rentalRate === "day" ? "Daily" : "Weekly"
-  const selectedRatePrice = selectedVehicle
-    ? formData.rentalRate === "day"
-      ? selectedVehicle.pricePerDay
-      : selectedVehicle.pricePerWeek
-    : undefined
+  const selectedRatePrice = selectedVehicle?.pricePerWeek
   const additionalDriverLines = additionalDrivers
     .filter((driver) => driver.name || driver.licenseNumber || driver.licenseState)
     .map(
@@ -169,13 +164,7 @@ export function buildRentalAgreementSnapshot({
     {
       title: "2. Rental Fees",
       lines: [
-        `Selected Price Option: ${
-          selectedRatePrice ? `${selectedRateLabel} - $${selectedRatePrice} per ${formData.rentalRate}` : "To be selected"
-        }`,
-        `Base Fee: ${selectedVehicle ? `$${selectedVehicle.pricePerWeek} per week` : "To be selected"}`,
-        `Rental Fee for Days Beyond Rental Term: ${
-          selectedVehicle ? `$${selectedVehicle.pricePerDay} per day` : "To be selected"
-        }`,
+        `Weekly Rate: ${selectedRatePrice ? `$${selectedRatePrice} per week` : "To be selected"}`,
         "Security Deposit: $50",
         `Delivery Fee: $${selectedVehicle?.deliveryFee ?? 0}`,
         `Weekly payments are due by: 5:00 PM on ${formData.paymentDueDay} each week.`,
