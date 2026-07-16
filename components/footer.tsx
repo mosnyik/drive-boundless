@@ -53,9 +53,18 @@ export function Footer() {
         </div>
         
         <div className="border-t border-primary-foreground/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-primary-foreground/50">
-            © {new Date().getFullYear()} Drive Boundless Auto Solutions. All rights reserved.
-          </p>
+          <div className="text-sm text-primary-foreground/50">
+            <p>© {new Date().getFullYear()} Drive Boundless Auto Solutions. All rights reserved.</p>
+            <p className="mt-1">
+              Developed by Zorex Tech · WhatsApp:{" "}
+              <a
+                href="https://wa.me/2349076407315"
+                className="hover:text-primary-foreground transition-colors"
+              >
+                +234 907 640 7315
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-6 text-sm text-primary-foreground/50">
             <Link href="/privacy" className="hover:text-primary-foreground transition-colors">
               Privacy Policy
@@ -64,18 +73,6 @@ export function Footer() {
               Terms of Service
             </Link>
           </div>
-        </div>
-
-        <div className="mt-8 pt-8 border-t border-primary-foreground/10 text-center text-sm text-primary-foreground/50">
-          <p>
-            Developed by Zorex Tech · WhatsApp:{" "}
-            <a
-              href="https://wa.me/2349076407315"
-              className="hover:text-primary-foreground transition-colors"
-            >
-              +234 907 640 7315
-            </a>
-          </p>
         </div>
       </div>
     </footer>
