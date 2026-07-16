@@ -65,6 +65,18 @@ export function Footer() {
             </Link>
           </div>
         </div>
+
+        <div className="mt-8 pt-8 border-t border-primary-foreground/10 text-center text-sm text-primary-foreground/50">
+          <p>
+            Developed by Zorex Tech · WhatsApp:{" "}
+            <a
+              href="https://wa.me/2349076407315"
+              className="hover:text-primary-foreground transition-colors"
+            >
+              +234 907 640 7315
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   )
