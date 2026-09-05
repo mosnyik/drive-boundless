@@ -43,6 +43,13 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handleSelect = (vehicle: Vehicle) => {
+    if (!vehicle.available) {
+      toast.error("Vehicle unavailable", {
+        description: `${vehicle.year} ${vehicle.make} ${vehicle.model} is not currently available for rental.`,
+      });
+      return;
+    }
+
     if (selectedId === vehicle.id) {
       setSelectedId(null);
       onSelectVehicle?.(null);
@@ -88,8 +95,11 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
             {vehicles.map((vehicle) => (
               <Card
                 key={vehicle.id}
-                className={`group cursor-pointer transition-all duration-300 hover:shadow-lg ${
-                  selectedId === vehicle.id ? "ring-2 ring-accent" : ""
+                aria-disabled={!vehicle.available}
+                className={`group transition-all duration-300 ${
+                  vehicle.available
+                    ? `cursor-pointer hover:shadow-lg ${selectedId === vehicle.id ? "ring-2 ring-accent" : ""}`
+                    : "cursor-not-allowed opacity-60 grayscale-35"
                 }`}
                 onClick={() => handleSelect(vehicle)}
               >
@@ -103,12 +113,19 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
                         {vehicle.make} {vehicle.model}
                       </CardTitle>
                     </div>
-                    {vehicle.available && (
+                    {vehicle.available ? (
                       <Badge
                         variant="outline"
                         className="text-xs bg-accent/10 text-accent border-accent/30"
                       >
                         Available
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-xs bg-muted text-muted-foreground border-border"
+                      >
+                        Unavailable
                       </Badge>
                     )}
                   </div>
@@ -203,13 +220,20 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
 
                     <Button
                       size="sm"
+                      disabled={!vehicle.available}
                       className={
                         selectedId === vehicle.id
                           ? "bg-accent hover:bg-accent/90"
                           : ""
                       }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelect(vehicle);
+                      }}
                     >
-                      {selectedId === vehicle.id ? (
+                      {!vehicle.available ? (
+                        "Unavailable"
+                      ) : selectedId === vehicle.id ? (
                         <>
                           <X className="h-4 w-4 mr-1" />
                           Unselect
