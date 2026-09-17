@@ -19,7 +19,26 @@ export const rentalApplication = defineType({
         ],
         layout: 'radio',
       },
-      validation: (rule) => rule.required(),
+      validation: (rule) =>
+        rule
+          .required()
+          .custom((status, context) => {
+            if (status !== 'approved') return true
+
+            const insurance = (
+              context.document as
+                | {insurance?: {status?: string; carrier?: string; policyNumber?: string; noInsuranceAcknowledgment?: string}}
+                | undefined
+            )?.insurance
+
+            const hasProofOfInsurance = Boolean(insurance?.carrier && insurance?.policyNumber)
+            const declinedInsurance =
+              insurance?.status === 'none' && insurance?.noInsuranceAcknowledgment === 'declined'
+
+            if (hasProofOfInsurance || declinedInsurance) return true
+
+            return 'Add the insurance carrier and policy number before approving, unless the renter declined insurance.'
+          }),
     }),
     defineField({
       name: 'submittedAt',
@@ -63,10 +82,54 @@ export const rentalApplication = defineType({
       name: 'insurance',
       title: 'Insurance',
       type: 'object',
-      description: 'Optional insurance information supplied by the renter.',
+      description: 'The renter\'s insurance choice, recorded at the time of application for proof of what was chosen.',
       fields: [
-        defineField({name: 'carrier', title: 'Carrier', type: 'string'}),
-        defineField({name: 'policyNumber', title: 'Policy number', type: 'string'}),
+        defineField({
+          name: 'status',
+          title: 'Insurance status',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Has own insurance', value: 'has'},
+              {title: 'No insurance', value: 'none'},
+            ],
+            layout: 'radio',
+          },
+        }),
+        defineField({
+          name: 'carrier',
+          title: 'Carrier',
+          type: 'string',
+          description: 'Required before approval unless the renter declined insurance. Add this once the renter provides proof of coverage.',
+          hidden: ({parent}) =>
+            (parent as {status?: string; noInsuranceAcknowledgment?: string} | undefined)?.status === 'none' &&
+            (parent as {status?: string; noInsuranceAcknowledgment?: string} | undefined)?.noInsuranceAcknowledgment ===
+              'declined',
+        }),
+        defineField({
+          name: 'policyNumber',
+          title: 'Policy number',
+          type: 'string',
+          description: 'Required before approval unless the renter declined insurance. Add this once the renter provides proof of coverage.',
+          hidden: ({parent}) =>
+            (parent as {status?: string; noInsuranceAcknowledgment?: string} | undefined)?.status === 'none' &&
+            (parent as {status?: string; noInsuranceAcknowledgment?: string} | undefined)?.noInsuranceAcknowledgment ===
+              'declined',
+        }),
+        defineField({
+          name: 'noInsuranceAcknowledgment',
+          title: 'No-insurance choice',
+          type: 'string',
+          description: 'What the renter chose when they indicated they have no insurance.',
+          options: {
+            list: [
+              {title: 'Will get RentalCover.com coverage', value: 'rentalcover'},
+              {title: 'Declined to get coverage', value: 'declined'},
+            ],
+            layout: 'radio',
+          },
+        }),
+        defineField({name: 'decisionAt', title: 'Decision recorded at', type: 'datetime', readOnly: true}),
       ],
     }),
     defineField({
@@ -183,11 +246,21 @@ export const rentalApplication = defineType({
       email: 'renter.email',
       submittedAt: 'submittedAt',
       status: 'status',
+      insuranceStatus: 'insurance.status',
+      carrier: 'insurance.carrier',
+      policyNumber: 'insurance.policyNumber',
+      noInsuranceAcknowledgment: 'insurance.noInsuranceAcknowledgment',
     },
-    prepare({name, email, submittedAt, status}) {
+    prepare({name, email, submittedAt, status, insuranceStatus, carrier, policyNumber, noInsuranceAcknowledgment}) {
+      const hasProofOfInsurance = Boolean(carrier && policyNumber)
+      const declinedInsurance = insuranceStatus === 'none' && noInsuranceAcknowledgment === 'declined'
+      const needsInsuranceProof = status !== 'declined' && !hasProofOfInsurance && !declinedInsurance
+
       return {
         title: name || 'Untitled application',
-        subtitle: [status, email, submittedAt].filter(Boolean).join(' - '),
+        subtitle: [status, needsInsuranceProof ? 'Needs insurance proof' : null, email, submittedAt]
+          .filter(Boolean)
+          .join(' - '),
       }
     },
   },

@@ -21,8 +21,10 @@ interface RentalApplicationPayload {
     licenseNumber: string
     licenseState: string
     licenseExpiry: string
+    insuranceStatus: "has" | "none" | ""
     insuranceCarrier?: string
     insurancePolicyNumber?: string
+    noInsuranceAcknowledgment?: "rentalcover" | "declined" | ""
     rentalPurpose: string
     startDate: string
     startTime: string
@@ -50,6 +52,7 @@ interface RentalApplicationPayload {
   visitorTimeZone: string
   agreementAccepted: boolean
   agreementAcceptedAt?: string
+  insuranceDecisionAt?: string
 }
 
 function required(value: unknown) {
@@ -124,6 +127,19 @@ function validatePayload(payload: RentalApplicationPayload) {
   if (!required(formData.licenseNumber)) missing.push("licenseNumber")
   if (!required(formData.licenseState)) missing.push("licenseState")
   if (!required(formData.licenseExpiry)) missing.push("licenseExpiry")
+
+  if (formData.insuranceStatus !== "has" && formData.insuranceStatus !== "none") {
+    missing.push("insuranceStatus")
+  } else if (formData.insuranceStatus === "has") {
+    if (!required(formData.insuranceCarrier)) missing.push("insuranceCarrier")
+    if (!required(formData.insurancePolicyNumber)) missing.push("insurancePolicyNumber")
+  } else if (
+    formData.noInsuranceAcknowledgment !== "rentalcover" &&
+    formData.noInsuranceAcknowledgment !== "declined"
+  ) {
+    missing.push("noInsuranceAcknowledgment")
+  }
+
   if (!required(formData.rentalPurpose)) missing.push("rentalPurpose")
   if (!required(formData.startDate)) missing.push("startDate")
   if (!required(formData.startTime)) missing.push("startTime")
@@ -343,11 +359,19 @@ export async function POST(request: Request) {
   const agreementAcceptedAt = isValidIsoDate(application.agreementAcceptedAt)
     ? application.agreementAcceptedAt
     : now
+  const insuranceDecisionAt = isValidIsoDate(application.insuranceDecisionAt)
+    ? application.insuranceDecisionAt
+    : now
   const agreement = buildRentalAgreementSnapshot({
-    formData,
+    formData: {
+      ...formData,
+      insuranceStatus: formData.insuranceStatus as "has" | "none",
+      noInsuranceAcknowledgment: formData.noInsuranceAcknowledgment || undefined,
+    },
     selectedVehicle,
     additionalDrivers,
     acceptedAt: agreementAcceptedAt,
+    insuranceDecisionAt,
   })
 
   try {
@@ -400,8 +424,11 @@ export async function POST(request: Request) {
         : undefined,
     },
     insurance: {
-      carrier: formData.insuranceCarrier || undefined,
-      policyNumber: formData.insurancePolicyNumber || undefined,
+      status: formData.insuranceStatus,
+      carrier: formData.insuranceStatus === "has" ? formData.insuranceCarrier || undefined : undefined,
+      policyNumber: formData.insuranceStatus === "has" ? formData.insurancePolicyNumber || undefined : undefined,
+      noInsuranceAcknowledgment: formData.insuranceStatus === "none" ? formData.noInsuranceAcknowledgment || undefined : undefined,
+      decisionAt: insuranceDecisionAt,
     },
     rental: {
       purpose: formData.rentalPurpose,

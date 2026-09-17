@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 import { Upload, FileText, Check, Calendar, User, Car, Shield, Plus, X, Clock } from "lucide-react"
@@ -15,6 +16,8 @@ import type { Vehicle } from "./vehicle-fleet"
 
 const submittedMessage = "our team is reviewing your application and will get back to you shortly"
 type RentalRate = "week"
+type InsuranceStatus = "has" | "none" | ""
+type NoInsuranceChoice = "rentalcover" | "declined" | ""
 
 const getVisitorTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
 const getTodayInputValue = () => new Date().toLocaleDateString("en-CA")
@@ -35,6 +38,7 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
   const [licenseFile, setLicenseFile] = useState<File | null>(null)
   const [agreementAccepted, setAgreementAccepted] = useState(false)
   const [agreementAcceptedAt, setAgreementAcceptedAt] = useState<string | null>(null)
+  const [insuranceDecisionAt, setInsuranceDecisionAt] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [additionalDrivers, setAdditionalDrivers] = useState<AdditionalDriver[]>([])
@@ -70,8 +74,10 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
     licenseState: "",
     licenseExpiry: "",
     // Insurance Information
+    insuranceStatus: "" as InsuranceStatus,
     insuranceCarrier: "",
     insurancePolicyNumber: "",
+    noInsuranceAcknowledgment: "" as NoInsuranceChoice,
     // Rental Details
     rentalPurpose: "",
     startDate: "",
@@ -155,6 +161,20 @@ export function RentalForm({ selectedVehicle }: RentalFormProps) {
     setOpenSelect(null)
   }
 
+  const handleInsuranceStatusChange = (value: InsuranceStatus) => {
+    setFormData((current) => ({
+      ...current,
+      insuranceStatus: value,
+      ...(value === "has" ? { noInsuranceAcknowledgment: "" } : { insuranceCarrier: "", insurancePolicyNumber: "" }),
+    }))
+    setInsuranceDecisionAt(new Date().toISOString())
+  }
+
+  const handleNoInsuranceChoice = (value: NoInsuranceChoice) => {
+    setFormData((current) => ({ ...current, noInsuranceAcknowledgment: value }))
+    setInsuranceDecisionAt(new Date().toISOString())
+  }
+
 const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -226,6 +246,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           additionalDrivers,
           agreementAccepted,
           agreementAcceptedAt: agreementAcceptedAt ?? new Date().toISOString(),
+          insuranceDecisionAt: insuranceDecisionAt ?? new Date().toISOString(),
         }),
       )
 
@@ -272,6 +293,11 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const missing2 = []
         if (!formData.licenseNumber || !formData.licenseState || !formData.licenseExpiry) missing2.push("license details")
         if (!licenseFile) missing2.push("license upload")
+        if (!formData.insuranceStatus) missing2.push("insurance status")
+        else if (formData.insuranceStatus === "has" && (!formData.insuranceCarrier || !formData.insurancePolicyNumber))
+          missing2.push("insurance carrier and policy number")
+        else if (formData.insuranceStatus === "none" && !formData.noInsuranceAcknowledgment)
+          missing2.push("how you'd like to proceed without insurance")
         return `Please complete: ${missing2.join(", ")}`
       case 3:
         const missing3 = []
@@ -312,7 +338,13 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       case 1:
         return formData.fullName && formData.email && formData.phone && formData.address && formData.city && formData.state && formData.zip
       case 2:
-        return formData.licenseNumber && formData.licenseState && formData.licenseExpiry && licenseFile
+        const insuranceComplete =
+          formData.insuranceStatus === "has"
+            ? Boolean(formData.insuranceCarrier && formData.insurancePolicyNumber)
+            : formData.insuranceStatus === "none"
+              ? Boolean(formData.noInsuranceAcknowledgment)
+              : false
+        return Boolean(formData.licenseNumber && formData.licenseState && formData.licenseExpiry && licenseFile && insuranceComplete)
       case 3:
         return (
           formData.rentalPurpose &&
@@ -374,6 +406,40 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     })
   }
 
+  const formatAgreementDateTime = (dateStr: string | null) => {
+    if (!dateStr) return placeholder("_______________")
+
+    return new Date(dateStr).toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    })
+  }
+
+  const insuranceSummary = () => {
+    if (formData.insuranceStatus === "has") {
+      return formData.insuranceCarrier || formData.insurancePolicyNumber
+        ? `${formData.insuranceCarrier || placeholder("Carrier not provided")}${
+            formData.insurancePolicyNumber ? ` - Policy #${formData.insurancePolicyNumber}` : ""
+          }`
+        : placeholder("Carrier and policy pending")
+    }
+
+    if (formData.insuranceStatus === "none") {
+      if (formData.noInsuranceAcknowledgment === "rentalcover") {
+        return "Renter has no current policy and has chosen to obtain short-term coverage through RentalCover.com before pickup."
+      }
+      if (formData.noInsuranceAcknowledgment === "declined") {
+        return "Renter has no current policy and has declined to obtain coverage, proceeding without insurance at their own risk."
+      }
+      return placeholder("Response pending")
+    }
+
+    return placeholder("Not yet indicated")
+  }
+
   if (isSubmitted) {
     return (
       <section id="rent" className="py-24 lg:py-32 bg-background">
@@ -391,13 +457,15 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             setFormData({
               fullName: "", address: "", city: "", state: "", zip: "",
               phone: "", email: "", licenseNumber: "", licenseState: "",
-              licenseExpiry: "", insuranceCarrier: "", insurancePolicyNumber: "",
+              licenseExpiry: "", insuranceStatus: "", insuranceCarrier: "", insurancePolicyNumber: "",
+              noInsuranceAcknowledgment: "",
               rentalPurpose: "", startDate: "", startTime: "", endDate: "", endTime: "", rentalRate: "week",
               paymentDueDay: "Monday", mileageAllowance: "unlimited", additionalNotes: "",
             })
             setLicenseFile(null)
             setAgreementAccepted(false)
             setAgreementAcceptedAt(null)
+            setInsuranceDecisionAt(null)
             setAdditionalDrivers([])
           }}>
             Submit Another Request
@@ -641,32 +709,103 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 </div>
 
                 <div className="border-t border-border pt-6">
-                  <h4 className="font-medium mb-4">Insurance Information <span className="text-muted-foreground">(optional)</span></h4>
+                  <h4 className="font-medium mb-1">Insurance Information *</h4>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Add your insurance information if you have it available. We can collect or confirm these details during follow-up.
+                    Auto insurance is required to rent with us. Let us know your situation below.
                   </p>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="insuranceCarrier">Insurance Carrier</Label>
-                      <Input
-                        id="insuranceCarrier"
-                        name="insuranceCarrier"
-                        value={formData.insuranceCarrier}
-                        onChange={handleChange}
-                        placeholder="State Farm, GEICO, etc."
-                      />
+
+                  <RadioGroup
+                    value={formData.insuranceStatus}
+                    onValueChange={(value) => handleInsuranceStatusChange(value as InsuranceStatus)}
+                    className="mb-4"
+                  >
+                    <Label
+                      htmlFor="insurance-has"
+                      className={`flex items-start gap-3 rounded-lg border p-4 font-normal cursor-pointer transition-colors ${
+                        formData.insuranceStatus === "has" ? "border-accent bg-accent/5" : "border-border"
+                      }`}
+                    >
+                      <RadioGroupItem value="has" id="insurance-has" className="mt-1" />
+                      <span>
+                        <span className="font-medium block text-foreground">I have my own auto insurance</span>
+                        <span className="text-sm text-muted-foreground">Provide your carrier and policy number below.</span>
+                      </span>
+                    </Label>
+                    <Label
+                      htmlFor="insurance-none"
+                      className={`flex items-start gap-3 rounded-lg border p-4 font-normal cursor-pointer transition-colors ${
+                        formData.insuranceStatus === "none" ? "border-accent bg-accent/5" : "border-border"
+                      }`}
+                    >
+                      <RadioGroupItem value="none" id="insurance-none" className="mt-1" />
+                      <span>
+                        <span className="font-medium block text-foreground">I do not currently have insurance</span>
+                        <span className="text-sm text-muted-foreground">We&apos;ll suggest a short-term option below.</span>
+                      </span>
+                    </Label>
+                  </RadioGroup>
+
+                  {formData.insuranceStatus === "has" && (
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="insuranceCarrier">Insurance Carrier *</Label>
+                        <Input
+                          id="insuranceCarrier"
+                          name="insuranceCarrier"
+                          value={formData.insuranceCarrier}
+                          onChange={handleChange}
+                          placeholder="State Farm, GEICO, etc."
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="insurancePolicyNumber">Policy Number *</Label>
+                        <Input
+                          id="insurancePolicyNumber"
+                          name="insurancePolicyNumber"
+                          value={formData.insurancePolicyNumber}
+                          onChange={handleChange}
+                          placeholder="POL-123456789"
+                          required
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <Label htmlFor="insurancePolicyNumber">Policy Number</Label>
-                      <Input
-                        id="insurancePolicyNumber"
-                        name="insurancePolicyNumber"
-                        value={formData.insurancePolicyNumber}
-                        onChange={handleChange}
-                        placeholder="POL-123456789"
-                      />
+                  )}
+
+                  {formData.insuranceStatus === "none" && (
+                    <div className="rounded-lg border border-accent/30 bg-accent/5 p-4 space-y-4">
+                      <p className="text-sm text-muted-foreground">
+                        You&apos;ll need auto insurance to rent with us. If you don&apos;t have a policy, we suggest
+                        getting short-term coverage through{" "}
+                        <a
+                          href="https://rentalcover.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-accent underline underline-offset-2"
+                        >
+                          RentalCover.com
+                        </a>{" "}
+                        before pickup. Please let us know how you&apos;d like to proceed.
+                      </p>
+                      <RadioGroup
+                        value={formData.noInsuranceAcknowledgment}
+                        onValueChange={(value) => handleNoInsuranceChoice(value as NoInsuranceChoice)}
+                      >
+                        <div className="flex items-start gap-3">
+                          <RadioGroupItem value="rentalcover" id="insurance-rentalcover" className="mt-1" />
+                          <Label htmlFor="insurance-rentalcover" className="font-normal cursor-pointer text-sm leading-relaxed">
+                            I will get short-term coverage through RentalCover.com before pickup.
+                          </Label>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <RadioGroupItem value="declined" id="insurance-declined" className="mt-1" />
+                          <Label htmlFor="insurance-declined" className="font-normal cursor-pointer text-sm leading-relaxed">
+                            I decline to obtain insurance and understand I am proceeding without coverage.
+                          </Label>
+                        </div>
+                      </RadioGroup>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Additional Drivers */}
@@ -941,7 +1080,7 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                       <p><strong>Address:</strong> {formData.address ? `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}` : placeholder("_______________")}</p>
                       <p><strong>Phone:</strong> {valueOrPlaceholder(formData.phone)}</p>
                       <p><strong>Email:</strong> {valueOrPlaceholder(formData.email)}</p>
-                      <p><strong>Insurance:</strong> {formData.insuranceCarrier || placeholder("Not provided at submission")} {formData.insurancePolicyNumber ? `- ${formData.insurancePolicyNumber}` : ""}</p>
+                      <p><strong>Insurance:</strong> {insuranceSummary()}</p>
                       <p className="text-xs text-muted-foreground">(&quot;Renter&quot;)</p>
                     </div>
                   </div>
@@ -1151,9 +1290,12 @@ const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
                   <div className="border-t border-border pt-4">
                     <h4 className="font-semibold text-foreground mb-2">16. INSURANCE</h4>
-                    <p><strong>Renter&apos;s Insurance:</strong> {formData.insuranceCarrier || placeholder("Not provided at submission")} {formData.insurancePolicyNumber ? `- Policy #${formData.insurancePolicyNumber}` : ""}</p>
+                    <p><strong>Renter&apos;s Insurance:</strong> {insuranceSummary()}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Recorded on: {formatAgreementDateTime(insuranceDecisionAt)}
+                    </p>
                     <p className="mt-2 text-muted-foreground">
-                      Renter must provide proof of insurance covering damage to the Rental Vehicle, personal injury, passenger injuries, and property damage. Turchese Solutions LLC DBA Boundless Autos must be added to the insurance policy and notified of any policy changes. If using company insurance, Renter is responsible for a $1,000 deductible for at-fault accidents or damages. Failure to pay deductible within 7 days may result in legal action.
+                      Renter must provide proof of insurance covering damage to the Rental Vehicle, personal injury, passenger injuries, and property damage. Turchese Solutions LLC DBA Boundless Autos must be added to the insurance policy and notified of any policy changes. If using company insurance, Renter is responsible for a $1,000 deductible for at-fault accidents or damages. Failure to pay deductible within 7 days may result in legal action. If Renter proceeds without insurance, as acknowledged above, Renter assumes full financial responsibility for any loss, damage, injury, or liability arising during the rental term, with no reduction or waiver of any amount owed to Owner.
                     </p>
                   </div>
 

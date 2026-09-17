@@ -11,8 +11,10 @@ export interface RentalAgreementFormData {
   licenseNumber: string
   licenseState: string
   licenseExpiry: string
+  insuranceStatus: "has" | "none"
   insuranceCarrier?: string
   insurancePolicyNumber?: string
+  noInsuranceAcknowledgment?: "rentalcover" | "declined"
   rentalPurpose: string
   startDate: string
   startTime: string
@@ -46,6 +48,7 @@ interface BuildRentalAgreementInput {
   selectedVehicle: RentalAgreementVehicle | null
   additionalDrivers: RentalAgreementAdditionalDriver[]
   acceptedAt: string
+  insuranceDecisionAt: string
 }
 
 export interface RentalAgreementSnapshot {
@@ -119,15 +122,24 @@ export function buildRentalAgreementSnapshot({
   selectedVehicle,
   additionalDrivers,
   acceptedAt,
+  insuranceDecisionAt,
 }: BuildRentalAgreementInput): RentalAgreementSnapshot {
   const signedDate = formatAcceptedDate(acceptedAt)
   const renterSignature = formData.fullName
   const renterAddress = formData.address
     ? `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}`
     : "_______________"
-  const insurance = `${formData.insuranceCarrier || "Not provided at submission"}${
-    formData.insurancePolicyNumber ? ` - ${formData.insurancePolicyNumber}` : ""
-  }`
+  const insurance =
+    formData.insuranceStatus === "has"
+      ? `${formData.insuranceCarrier || "Carrier not provided"}${
+          formData.insurancePolicyNumber ? ` - Policy #${formData.insurancePolicyNumber}` : ""
+        }`
+      : formData.noInsuranceAcknowledgment === "rentalcover"
+        ? "Renter has no current policy and has chosen to obtain short-term coverage through RentalCover.com (https://rentalcover.com/) before pickup."
+        : formData.noInsuranceAcknowledgment === "declined"
+          ? "Renter has no current policy and has declined to obtain coverage, proceeding without insurance at their own risk."
+          : "Not indicated"
+  const insuranceDecisionDate = formatAcceptedDate(insuranceDecisionAt)
   const selectedRatePrice = selectedVehicle?.pricePerWeek
   const additionalDriverLines = additionalDrivers
     .filter((driver) => driver.name || driver.licenseNumber || driver.licenseState)
@@ -278,7 +290,8 @@ export function buildRentalAgreementSnapshot({
       title: "16. Insurance",
       lines: [
         `Renter's Insurance: ${insurance}`,
-        "Renter must provide proof of insurance covering damage to the Rental Vehicle, personal injury, passenger injuries, and property damage. Turchese Solutions LLC DBA Boundless Autos must be added to the insurance policy and notified of any policy changes. If using company insurance, Renter is responsible for a $1,000 deductible for at-fault accidents or damages. Failure to pay deductible within 7 days may result in legal action.",
+        `Insurance decision recorded on: ${insuranceDecisionDate}`,
+        "Renter must provide proof of insurance covering damage to the Rental Vehicle, personal injury, passenger injuries, and property damage. Turchese Solutions LLC DBA Boundless Autos must be added to the insurance policy and notified of any policy changes. If using company insurance, Renter is responsible for a $1,000 deductible for at-fault accidents or damages. Failure to pay deductible within 7 days may result in legal action. If Renter proceeds without insurance, as acknowledged above, Renter assumes full financial responsibility for any loss, damage, injury, or liability arising during the rental term, with no reduction or waiver of any amount owed to Owner.",
       ],
     },
     {
