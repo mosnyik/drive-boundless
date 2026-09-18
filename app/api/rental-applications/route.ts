@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { buildRentalAgreementSnapshot } from "@/lib/rental-agreement"
+import { buildRentalAgreementSnapshot, type RentalAgreementCompany } from "@/lib/rental-agreement"
+import { sanityFetch } from "@/lib/sanity"
 
 const projectId =
   process.env.SANITY_PROJECT_ID ?? process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "rs5e478x"
@@ -209,6 +210,17 @@ async function uploadSanityFile(file: Blob | Uint8Array, contentType: string, fi
   return body.document._id
 }
 
+const vehicleCompanyQuery = `*[_id == $id][0]{
+  "company": company->{"legalName": name, dbaName, address, phone, email}
+}`
+
+async function getVehicleCompany(vehicleId: string): Promise<RentalAgreementCompany | undefined> {
+  const result = await sanityFetch<{ company: RentalAgreementCompany | null }>(vehicleCompanyQuery, {
+    id: vehicleId,
+  })
+  return result?.company ?? undefined
+}
+
 async function uploadLicenseFile(file: File) {
   return uploadSanityFile(file, file.type || "application/octet-stream", file.name || "drivers-license", "License")
 }
@@ -362,6 +374,7 @@ export async function POST(request: Request) {
   const insuranceDecisionAt = isValidIsoDate(application.insuranceDecisionAt)
     ? application.insuranceDecisionAt
     : now
+  const company = selectedVehicle ? await getVehicleCompany(selectedVehicle.id) : undefined
   const agreement = buildRentalAgreementSnapshot({
     formData: {
       ...formData,
@@ -372,6 +385,7 @@ export async function POST(request: Request) {
     additionalDrivers,
     acceptedAt: agreementAcceptedAt,
     insuranceDecisionAt,
+    company,
   })
 
   try {
