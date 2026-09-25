@@ -185,14 +185,6 @@ export function VehicleFleet({ vehicles, onSelectVehicle }: VehicleFleetProps) {
                       </span>
                       <span className="font-medium">{vehicle.pickupTimes}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Delivery fee
-                      </span>
-                      <span className="font-medium">
-                        ${vehicle.deliveryFee}
-                      </span>
-                    </div>
                   </div>
 
                   {/* Price & CTA */}
