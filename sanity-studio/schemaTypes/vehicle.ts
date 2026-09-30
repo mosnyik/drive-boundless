@@ -42,6 +42,14 @@ export const vehicle = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: 'vin',
+      title: 'VIN',
+      type: 'string',
+      description: '17-character Vehicle Identification Number. Printed on rental agreements; never shown on the website.',
+      validation: (rule) =>
+        rule.regex(/^[A-HJ-NPR-Z0-9]{17}$/, {name: 'VIN'}).error('VIN must be 17 characters (letters and numbers, no I, O or Q).'),
+    }),
+    defineField({
       name: 'pricePerDay',
       title: 'Price per day',
       type: 'number',

@@ -35,6 +35,7 @@ export interface RentalAgreementVehicle {
   pricePerDay: number
   pricePerWeek: number
   deliveryFee?: number
+  vin?: string
 }
 
 export interface RentalAgreementAdditionalDriver {
@@ -177,7 +178,7 @@ export function buildRentalAgreementSnapshot({
       lines: [
         "Owner hereby agrees to rent to Renter a passenger vehicle identified as follows:",
         `Vehicle: ${vehicleLabel(selectedVehicle)}`,
-        "VIN: To be recorded at pickup",
+        `VIN: ${selectedVehicle?.vin?.trim() || "To be recorded at pickup"}`,
         "License Plate: To be recorded at pickup",
         `This Car Rental Agreement is entered into between ${companyDisplayName} and ${valueOrPlaceholder(
           formData.fullName,

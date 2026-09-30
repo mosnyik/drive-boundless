@@ -210,15 +210,20 @@ async function uploadSanityFile(file: Blob | Uint8Array, contentType: string, fi
   return body.document._id
 }
 
-const vehicleCompanyQuery = `*[_id == $id][0]{
+const vehicleAgreementDetailsQuery = `*[_id == $id][0]{
+  vin,
   "company": company->{"legalName": name, dbaName, address, phone, email}
 }`
 
-async function getVehicleCompany(vehicleId: string): Promise<RentalAgreementCompany | undefined> {
-  const result = await sanityFetch<{ company: RentalAgreementCompany | null }>(vehicleCompanyQuery, {
-    id: vehicleId,
-  })
-  return result?.company ?? undefined
+async function getVehicleAgreementDetails(vehicleId: string) {
+  const result = await sanityFetch<{ vin: string | null; company: RentalAgreementCompany | null }>(
+    vehicleAgreementDetailsQuery,
+    { id: vehicleId },
+  )
+  return {
+    vin: result?.vin ?? undefined,
+    company: result?.company ?? undefined,
+  }
 }
 
 async function uploadLicenseFile(file: File) {
@@ -374,18 +379,18 @@ export async function POST(request: Request) {
   const insuranceDecisionAt = isValidIsoDate(application.insuranceDecisionAt)
     ? application.insuranceDecisionAt
     : now
-  const company = selectedVehicle ? await getVehicleCompany(selectedVehicle.id) : undefined
+  const vehicleDetails = selectedVehicle ? await getVehicleAgreementDetails(selectedVehicle.id) : undefined
   const agreement = buildRentalAgreementSnapshot({
     formData: {
       ...formData,
       insuranceStatus: formData.insuranceStatus as "has" | "none",
       noInsuranceAcknowledgment: formData.noInsuranceAcknowledgment || undefined,
     },
-    selectedVehicle,
+    selectedVehicle: selectedVehicle ? { ...selectedVehicle, vin: vehicleDetails?.vin } : null,
     additionalDrivers,
     acceptedAt: agreementAcceptedAt,
     insuranceDecisionAt,
-    company,
+    company: vehicleDetails?.company,
   })
 
   try {
